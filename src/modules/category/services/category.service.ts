@@ -1,0 +1,50 @@
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { CATEGORY_REPOSITORY } from '../../../common/constants';
+import { CreateCategoryDto } from '../dto/create-category.dto';
+import { UpdateCategoryDto } from '../dto/update-category.dto';
+import { CategoryEntity } from '../entities/category.entity';
+
+@Injectable()
+export class CategoryService {
+  constructor(@Inject(CATEGORY_REPOSITORY) private readonly categoryRepo: typeof CategoryEntity) { }
+
+  async create(createCategoryDto: CreateCategoryDto): Promise<CategoryEntity> {
+    try {
+      return await this.categoryRepo.create<CategoryEntity>(createCategoryDto)
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async findAll(): Promise<CategoryEntity[]> {
+    try {
+      return await this.categoryRepo.findAll<CategoryEntity>()
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async findOne(id: number): Promise<CategoryEntity> {
+    try {
+      return await this.categoryRepo.findOne<CategoryEntity>({ where: { id }, raw: true });
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<number[]> {
+    try {
+      return await this.categoryRepo.update<CategoryEntity>({ ...updateCategoryDto }, { where: { id } })
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async remove(id: number): Promise<number> {
+    try {
+      return await this.categoryRepo.destroy<CategoryEntity>({ where: { id } })
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+}
