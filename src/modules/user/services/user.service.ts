@@ -204,7 +204,7 @@ export class UserService {
       const payload = { sub: id, role }
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
-      // const encrypt: string = encryptAES(SignData);
+      const encrypt: string = encryptAES(SignData);
       return SignData
 
     } catch (error) {
@@ -227,15 +227,15 @@ export class UserService {
       // The Group Hooking that for group of user.
       // after that admin will be verify that again.
       // because the group or user will be a real person.
-      const addressHook = await this.addressService.create({
-        houseNo: "",
-        villageNo: "",
-        village: "",
-        subDistrict: "",
-        district: "",
-        province: "",
-        zipCode: "",
-      });
+      // const addressHook = await this.addressService.create({
+      //   houseNo: "",
+      //   villageNo: "",
+      //   village: "",
+      //   subDistrict: "",
+      //   district: "",
+      //   province: "",
+      //   zipCode: "",
+      // });
       const groupHook = await this.groupService.create({
         groupName: "",
         groupType: GroupTypeEnum.SHOP,
@@ -244,7 +244,8 @@ export class UserService {
         email: "",
         logo: "",
         banner: "",
-        addressId: addressHook['dataValues'].id,
+       
+        // addressId: addressHook['dataValues'].id,
         verified: false,
       })
       await this.update(createUser.id, {
@@ -267,6 +268,9 @@ export class UserService {
       const token = await this.generateToken(payload);
       return { user: userData, token };
     } catch (error) {
+      console.log('=========== err =========================');
+      console.log(error);
+      console.log('====================================');
       throw new BadRequestException()
     }
   }
