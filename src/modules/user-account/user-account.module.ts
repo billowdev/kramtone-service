@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv';
 import { JwtAuthStrategy, LocalStrategy } from '../../common/strategies';
 import { RolesGuard } from '../../common/guards';
 import { SharedModule } from '../shared/shared.module';
+import { UserIsActivateAuthStrategy } from 'src/common/strategies/user-is-activate.strategy';
 dotenv.config();
 
 @Module({
@@ -26,7 +27,8 @@ dotenv.config();
     ...userProviders,
     LocalStrategy,
     JwtAuthStrategy,
-    RolesGuard
+    RolesGuard,
+    UserIsActivateAuthStrategy
   ]
 })
 export class UserModule {

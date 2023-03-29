@@ -19,6 +19,5 @@ export class UserIsExist implements CanActivate {
             throw new ForbiddenException('This username already exist');
         }
         return true;
-
     }
 }
