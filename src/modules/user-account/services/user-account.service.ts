@@ -79,10 +79,10 @@ export class UserService {
 
   public async refreshToken(auth: TokenDto): Promise<TokenDto> {
     try {
-      const { sub, role } = auth
-      const refreshToken: string = await this.generateToken({ sub, role });
+      const { sub, role, activated } = auth
+      const refreshToken: string = await this.generateToken({ sub, role, activated});
       const payload: TokenDto = {
-        sub, role, refreshToken
+        sub, role, refreshToken, activated
       }
       return payload
     } catch (error) {
@@ -194,9 +194,9 @@ export class UserService {
     try {
       // find user id and role from auth
       const user: UserEntity = await this.findOneByUsername(body.username)
-      const { id, role } = user
+      const { id, role, activated } = user
       delete user.hashPassword
-      const payload = { sub: id, role }
+      const payload = { sub: id, role, activated }
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
       const encrypt: string = encryptAES(SignData);
@@ -210,42 +210,13 @@ export class UserService {
   // signup : register service
   public async signup(userSignUp: SignUpDto): Promise<SignDto> {
     try {
-
       const hashPassword = await this.hashPassword(userSignUp.password);
       delete userSignUp.password;
-
       const createUser = await this.create({ ...userSignUp, hashPassword });
-
       delete createUser.hashPassword
-      // so for user account admin will verify too that is "activate" field in user table.
-      // and the user will be have a group by default.
-      // The Group Hooking that for group of user-account.
-      // after that admin will be verify that again.
-      // because the group or user will be a real person.
-      // const addressHook = await this.addressService.create({
-      //   houseNo: "",
-      //   villageNo: "",
-      //   village: "",
-      //   subDistrict: "",
-      //   district: "",
-      //   province: "",
-      //   zipCode: "",
-      // });
-      const groupHook = await this.groupDataService.create({
-        groupName: "",
-        groupType: GroupTypeEnum.SHOP,
-        agency: "",
-        phone: "",
-        email: "",
-        logo: "",
-        banner: "",
-       
-        // addressId: addressHook['dataValues'].id,
-        verified: false,
-      })
       await this.update(createUser.id, {
         ...createUser['dataValues'],
-        groupId: groupHook['dataValues'].id
+        groupId: null
       })
       const userData = await this.userRepo.findOne({
         where: {
@@ -255,7 +226,8 @@ export class UserService {
       delete userData['dataValues'].hashPassword
       const payload = {
         sub: createUser['dataValues'].id,
-        role: createUser['dataValues'].role
+        role: createUser['dataValues'].role,
+        activated: createUser['dataValues'].activated
       }
       const token = await this.generateToken(payload);
       return { user: userData, token };
