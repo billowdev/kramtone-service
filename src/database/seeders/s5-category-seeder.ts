@@ -6,7 +6,7 @@ type CategoryType = {
 	desc: string,
 	image: string,
 	is_default: boolean;
-	group_id:string;
+	group_id: string;
 	created_at: Date,
 	updated_at: Date
 }
