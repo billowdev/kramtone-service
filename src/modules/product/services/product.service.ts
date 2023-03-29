@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { PRODUCT_IMAGE_REPOSITORY, PRODUCT_REPOSITORY } from '../../../common/constants';
 import { CategoryEntity } from '../../../modules/category/entities/category.entity';
-import { UserEntity } from '../../../modules/user/entities/user.entity';
+import { UserEntity } from '../../../modules/user-account/entities/user-account.entity';
 import { CreateProductImageDto } from '../dto/create-product-image.dto';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';

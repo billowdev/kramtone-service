@@ -1,11 +1,13 @@
 'use strict';
 import { QueryInterface } from "sequelize";
 import * as argon from 'argon2'
-import { Role } from 'src/modules/user/types/role.enum';
+import { Role } from '../../modules/user-account/types/role.enum';
+
 async function hashPassword(password: string) {
   const hash: string = await argon.hash(password, { type: argon.argon2id });
   return hash;
 }
+
 type UserType = {
   id: string,
   username: string,
@@ -51,7 +53,7 @@ module.exports = {
         surname: "user1",
         phone: "0987654321",
         remove: false,
-        role: Role.USER,
+        role: Role.MEMBER,
         group_id: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
         created_at: new Date(),
         updated_at: new Date(),
@@ -66,7 +68,7 @@ module.exports = {
         surname: "user2",
         phone: "0987654321",
         remove: false,
-        role: Role.USER,
+        role: Role.MEMBER,
         group_id: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
         created_at: new Date(),
         updated_at: new Date(),

@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { UserService } from './../../modules/user/services/user.service';
+import { UserService } from './../../modules/user-account/services/user-account.service';
 
 @Injectable()
 export class UserIsExist implements CanActivate {

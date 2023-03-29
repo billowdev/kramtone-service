@@ -6,7 +6,7 @@ import { UpdateColorSchemeDto } from '../dto/update-color-scheme.dto';
 import { ColorSchemeEntity } from '../entities/color-scheme.entity';
 import { GroupColorSchemeEntity } from '../entities/group-color-scheme.entity';
 import { ColorSchemeArrayType } from '../types/color-scheme.types';
-import { GroupService } from './../../group/services/group.service';
+import { GroupDataService } from './../../group-data/services/group-data.service';
 
 @Injectable()
 export class ColorSchemeService {
@@ -14,7 +14,7 @@ export class ColorSchemeService {
   constructor(
     @Inject(COLOR_SCHEME_REPOSITORY) private readonly ColorSchemeRepo: typeof ColorSchemeEntity,
     @Inject(GROUP_COLOR_SCHEME_REPOSITORY) private readonly groupColorSchemeRepo: typeof GroupColorSchemeEntity,
-    private readonly groupService: GroupService
+    private readonly groupDataService: GroupDataService
   ) { }
 
   async create(createColorSchemeDto: CreateColorSchemeDto): Promise<ColorSchemeEntity> {
@@ -83,7 +83,7 @@ export class ColorSchemeService {
 
   async createGroupColorScheme(groupId: string, colorSchemeId: string): Promise<GroupColorSchemeEntity> {
     const colorScheme = await this.ColorSchemeRepo.findByPk(colorSchemeId);
-    const group = await this.groupService.findOne(groupId);
+    const group = await this.groupDataService.findOne(groupId);
   
     if (!colorScheme || !group) {
       throw new Error('User or group not found.');

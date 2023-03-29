@@ -2,9 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUIDV4 } from "sequelize";
 import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { CategoryEntity } from "../../../modules/category/entities/category.entity";
-import { UserEntity } from "../../../modules/user/entities/user.entity";
 import { ProductAttributes, ProductCreationAttributes } from "../types/product-entity.types";
 import { ProductImageEntity } from "./product-image.entity";
+import { GroupDataEntity } from './../../group-data/entities/group-data.entity';
 
 @Table({
 	tableName: 'product',
@@ -44,10 +44,10 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		description: 'The product description',
 		example: 'ผ้าซิ่นย้อมคราม',
 		nullable: true,
-		maxLength: 500
+		maxLength: 255
 	})
 	@Column({
-		type: DataType.STRING(500),
+		type: DataType.STRING(255),
 		allowNull: true
 	})
 	declare desc: string;
@@ -61,35 +61,36 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	})
 	declare price: number;
 
-	@BelongsTo(() => UserEntity, { onDelete: 'casCade' })
-	user: UserEntity
-	@ForeignKey(() => UserEntity)
+	@BelongsTo(() => GroupDataEntity, { onDelete: 'casCade' })
+	group: GroupDataEntity
+	@ForeignKey(() => GroupDataEntity)
 	@ApiProperty({
-		description: 'Foreign key as userId',
-		example: '41b4f7c2-b221-4a6b-a0e3-d7ec80e011a1',
+		description: 'Foreign key as groupId',
+		example: '21b4f7c2-b221-4a6b-a0e3-d7ec80e011a1',
 	})
 	@Column({
 		type: DataType.UUID,
-		field: "user_id",
+		field: "group_data_id",
 		unique: false,
 		allowNull: false
 	})
-	declare userId: string;
+	declare groupId: string;
+
 
 	@BelongsTo(()=> CategoryEntity, {onDelete: 'casCade'})
 	category: CategoryEntity
 	@ForeignKey(()=>CategoryEntity)
 	@ApiProperty({
 		description: 'Foreign key as categoryId',
-		example: 1,
+		example: "51b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
 	})
 	@Column({
-		type: DataType.INTEGER,
+		type: DataType.UUID,
 		field: "category_id",
 		unique: false,
 		allowNull: false
 	})
-	declare categoryId: number
+	declare categoryId: string
 
 	@ApiProperty({
 		description: 'When product was created',

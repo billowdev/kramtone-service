@@ -10,7 +10,7 @@ import { requestErrorResponse, requestFailResponse, requestOkResponse } from '..
 import { imageFileFilter } from '../../../common/utils/image-file-filter.util';
 import { removeExistImage } from '../../../common/utils/remove-exist-image.util';
 import { updateCategoryFileName } from '../../../common/utils/update-file-name.util';
-import { Role } from '../../../modules/user/types/role.enum';
+import { Role } from '../../../modules/user-account/types/role.enum';
 import { ApiCategoryCreatedBadRequestResponse, ApiCategoryCreatedOkResponse, ApiCategoryDeleteBadRequestResponse, ApiCategoryDeleteOkResponse, ApiCategoryGetOneBadRequestResponse, ApiCategoryGetOneOkResponse, ApiCategoryParam, ApiCategoryUpdateBadRequestResponse, ApiCategoryUpdateOkResponse } from '../category.document';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';

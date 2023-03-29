@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
 import { ColorSchemeAttributes, ColorSchemeCreationAttributes } from "../types/color-scheme-entity.types";
-import { GroupEntity } from './../../group/entities/group.entity';
+import { GroupDataEntity } from './../../group-data/entities/group-data.entity';
 import { GroupColorSchemeEntity } from "./group-color-scheme.entity";
 
 @Table({
@@ -65,7 +65,7 @@ export class ColorSchemeEntity extends Model<ColorSchemeAttributes, ColorSchemeC
 	declare hex: string
 
 
-	@BelongsToMany(() => GroupEntity, () => GroupColorSchemeEntity)
-	groups: GroupEntity[];
+	@BelongsToMany(() => GroupDataEntity, () => GroupColorSchemeEntity)
+	groups: GroupDataEntity[];
 
 }

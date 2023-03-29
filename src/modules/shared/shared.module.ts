@@ -1,23 +1,19 @@
 import { Module } from "@nestjs/common";
-import { UserService } from '../user/services/user.service';
-import { GroupService } from '../group/services/group.service';
-import { userProviders } from "../user/entities/user.providers";
+import { UserService } from '../user-account/services/user-account.service';
+import { GroupDataService } from '../group-data/services/group-data.service';
+import { userProviders } from "../user-account/entities/user-account.providers";
 import { JwtService } from '@nestjs/jwt';
-import { groupProviders } from '../group/entities/group.providers';
-import { AddressService } from '../address/services/address.service';
-import { addressProviders } from "../address/entities/address.providers";
+import { groupProviders } from '../group-data/entities/group-data.providers';
 
 @Module({
 	providers: [
 		JwtService,
 		UserService, ...userProviders,
-		GroupService, ...groupProviders,
-		AddressService, ...addressProviders
+		GroupDataService, ...groupProviders,
 	],
 	exports: [
 		UserService, ...userProviders,
-		GroupService, ...groupProviders,
-		AddressService, ...addressProviders
+		GroupDataService, ...groupProviders,
 	]
 })
 export class SharedModule { }

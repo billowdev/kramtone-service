@@ -8,7 +8,7 @@ import { ApiCommonUnauthorizedException } from '../../../common/swagger-document
 import { requestErrorResponse, requestFailResponse, requestOkResponse } from '../../../common/utils/generate-response.util';
 import { imageFileFilter } from '../../../common/utils/image-file-filter.util';
 import { updateProductFileName } from '../../../common/utils/update-file-name.util';
-import { Role } from '../../../modules/user/types/role.enum';
+import { Role } from '../../../modules/user-account/types/role.enum';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
 import { ProductImageEntity } from '../entities/product-image.entity';
@@ -28,7 +28,7 @@ export class ProductController {
 
   // ============================ Product ===================================
 
-  @Roles(Role.ADMIN, Role.USER)
+  @Roles(Role.ADMIN, Role.MEMBER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOkResponse(ApiProductCreateOkResponse)
   @ApiBadRequestResponse(ApiProductCreateBadRequestResponse)

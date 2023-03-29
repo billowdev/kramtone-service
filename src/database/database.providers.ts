@@ -1,13 +1,11 @@
 import { Sequelize } from 'sequelize-typescript';
-import { AddressEntity } from '../modules/address/entities/address.entity';
-// import { AdminEntity } from '../modules/admin/entities/admin.entity';
 import { CategoryEntity } from '../modules/category/entities/category.entity';
 import { ProductImageEntity } from '../modules/product/entities/product-image.entity';
 import { ProductEntity } from '../modules/product/entities/product.entity';
 import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../common/constants';
 import { dbConfig } from './database.config';
-import { GroupEntity } from './../modules/group/entities/group.entity';
-import { UserEntity } from '../modules/user/entities/user.entity';
+import { GroupDataEntity } from './../modules/group-data/entities/group-data.entity';
+import { UserEntity } from '../modules/user-account/entities/user-account.entity';
 import { ColorSchemeEntity } from './../modules/color-scheme/entities/color-scheme.entity';
 import { GroupColorSchemeEntity } from 'src/modules/color-scheme/entities/group-color-scheme.entity';
 
@@ -39,7 +37,7 @@ export const databaseProviders = [{
          CategoryEntity,
          ProductEntity,
          ProductImageEntity,
-         GroupEntity,
+         GroupDataEntity,
          GroupColorSchemeEntity
       ]);
       // { force: true } should be fasle in production

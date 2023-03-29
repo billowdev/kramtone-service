@@ -4,7 +4,7 @@ import { Roles } from '../../../common/decorators/roles.decorator';
 import { JwtAuthGuard, RolesGuard } from '../../../common/guards';
 import { ApiCommonForbiddenResponse } from '../../../common/swagger-document/forbidden.document';
 import { requestErrorResponse, requestFailResponse, requestOkResponse } from '../../../common/utils/generate-response.util';
-import { Role } from '../../../modules/user/types/role.enum';
+import { Role } from '../../../modules/user-account/types/role.enum';
 import { BulkCreateColorSchemeDto, CreateColorSchemeDto } from '../dto/create-color-scheme.dto';
 import { UpdateColorSchemeDto } from '../dto/update-color-scheme.dto';
 import { ColorSchemeEntity } from '../entities/color-scheme.entity';
@@ -15,7 +15,7 @@ import { CreateColorSchemeResponseType, DeleteColorSchemeResponseType, GetOneCol
 @ApiTags('Indigo tone')
 @Controller('ColorSchemes')
 export class ColorSchemeController {
-  constructor(private readonly ColorSchemeService: ColorSchemeService) { }
+  constructor(private readonly colorSchemeService: ColorSchemeService) { }
 
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -29,7 +29,7 @@ export class ColorSchemeController {
   @Post()
   async create(@Body() createColorSchemeDto: CreateColorSchemeDto): Promise<CreateColorSchemeResponseType> {
     try {
-      const payload: ColorSchemeEntity = await this.ColorSchemeService.create(createColorSchemeDto);
+      const payload: ColorSchemeEntity = await this.colorSchemeService.create(createColorSchemeDto);
       return requestOkResponse<ColorSchemeEntity>(payload)
     } catch (error) {
       return requestFailResponse(400, 'create indigo tone was failed')
@@ -48,7 +48,7 @@ export class ColorSchemeController {
   @Post('/bulk')
   async bulkCreate(@Body() bulkCreateColorSchemeDto: BulkCreateColorSchemeDto): Promise<ColorSchemeArrayResponseType> {
     try {
-      const payload: ColorSchemeArrayType= await this.ColorSchemeService.bulkCreate(bulkCreateColorSchemeDto);
+      const payload: ColorSchemeArrayType= await this.colorSchemeService.bulkCreate(bulkCreateColorSchemeDto);
       return requestOkResponse<ColorSchemeArrayType>(payload)
     } catch (error) {
       return requestFailResponse(400, 'bulk create indigo tone was failed')
@@ -62,7 +62,7 @@ export class ColorSchemeController {
   @ApiBadRequestResponse(ApiColorSchemeGetAllBadRequestResponse)
   async findAll(): Promise<ColorSchemeArrayResponseType> {
     try {
-      const payload: ColorSchemeArrayType = await this.ColorSchemeService.findAll();
+      const payload: ColorSchemeArrayType = await this.colorSchemeService.findAll();
       return requestOkResponse<ColorSchemeArrayType>(payload);
     } catch (error) {
       return requestFailResponse(400, 'get all indigo tone was failed')
@@ -77,7 +77,7 @@ export class ColorSchemeController {
   @ApiBadRequestResponse(ApiColorSchemeGetOneBadRequestResponse)
   async findOne(@Param('id') id: string): Promise<GetOneColorSchemeResponseType> {
     try {
-      const payload: ColorSchemeEntity = await this.ColorSchemeService.findOne(id);
+      const payload: ColorSchemeEntity = await this.colorSchemeService.findOne(id);
       if (!payload) return requestFailResponse(400, 'get one indigo tone was failed')
       return requestOkResponse<ColorSchemeEntity>(payload);
     } catch (error) {
@@ -93,7 +93,7 @@ export class ColorSchemeController {
   @ApiBadRequestResponse(ApiColorSchemeUpdateBadRequestResponse)
   async update(@Param('id') id: string, @Body() updateColorSchemeDto: UpdateColorSchemeDto): Promise<UpdateColorSchemeResponseType> {
     try {
-      const payload = await this.ColorSchemeService.update(id, updateColorSchemeDto);
+      const payload = await this.colorSchemeService.update(id, updateColorSchemeDto);
       return requestOkResponse<any>(payload);
     } catch (error) {
       return requestFailResponse(400, 'update indigo tone was failed')
@@ -108,7 +108,7 @@ export class ColorSchemeController {
   @ApiBadRequestResponse(ApiColorSchemeDeleteBadRequestResponse)
   async remove(@Param('id') id: string): Promise<DeleteColorSchemeResponseType> {
     try {
-      const payload: number = await this.ColorSchemeService.remove(id);
+      const payload: number = await this.colorSchemeService.remove(id);
       return requestOkResponse<number>(payload);
     } catch (error) {
       return requestFailResponse(400, 'delete indigo tone was failed')

@@ -3,11 +3,11 @@ import { ColorSchemeController } from './controllers/color-scheme.controller';
 import { ColorSchemeProviders } from './entities/color-scheme.providers';
 import { groupColorSchemeProviders } from './entities/group-color-scheme.providers';
 import { ColorSchemeService } from './services/color-scheme.service';
-import { GroupModule } from './../group/group.module';
+import { GroupDataModule } from '../group-data/group-data.module';
 
 @Module({
   // imports: [SequelizeModule.forFeature([ColorSchemeEntity, GroupColorSchemeEntity])],
-  imports : [GroupModule],
+  imports : [GroupDataModule],
 controllers: [ColorSchemeController],
   providers: [
     ColorSchemeService,
