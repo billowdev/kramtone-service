@@ -27,4 +27,8 @@ export class TokenDto {
 	@IsOptional()
 	refreshToken?: string
 
+	@IsString()
+	@IsNotEmpty()
+	activated: boolean;
+
 }

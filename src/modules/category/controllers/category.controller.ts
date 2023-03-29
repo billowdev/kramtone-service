@@ -17,14 +17,15 @@ import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
 import { CateogoryArrayResponseType, CateogoryArrayType, CreateCategoryResponseType } from '../types/category.types';
+import { UserIsActivateAuthGuard } from './../../../common/guards/user-is-activate.guard';
 
 @ApiTags('Category')
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @UseGuards(JwtAuthGuard, UserIsActivateAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.BAD_REQUEST)
   @HttpCode(HttpStatus.FORBIDDEN)
@@ -72,9 +73,9 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.MEMBER)
   @ApiParam(ApiCategoryParam)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
   @ApiOkResponse(ApiCategoryUpdateOkResponse)
   @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
@@ -93,8 +94,8 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
   @ApiParam(ApiCategoryParam)
   @ApiOkResponse(ApiCategoryDeleteOkResponse)
   @ApiBadRequestResponse(ApiCategoryDeleteBadRequestResponse)
@@ -114,8 +115,8 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
   @ApiOkResponse(ApiCategoryUpdateOkResponse)
   @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)

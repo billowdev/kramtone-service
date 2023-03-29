@@ -17,7 +17,7 @@ export const databaseProviders = [{
       switch (process.env.NODE_ENV) {
          case DEVELOPMENT:
             config = dbConfig.development;
-            isForce = false
+            isForce = true
             break;
          case TEST:
             config = dbConfig.test;
