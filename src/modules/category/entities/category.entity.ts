@@ -72,7 +72,7 @@ export class CategoryEntity extends Model<CategoryAttributes, CategoryCreationAt
 		type: DataType.UUID,
 		field: "group_id",
 		unique: false,
-		allowNull: false
+		allowNull: true
 	})
 	declare groupId: string
 

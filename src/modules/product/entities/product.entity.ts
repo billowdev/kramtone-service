@@ -62,7 +62,7 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	declare price: number;
 
 	@BelongsTo(() => GroupDataEntity, { onDelete: 'casCade' })
-	group: GroupDataEntity
+	groupData: GroupDataEntity
 	@ForeignKey(() => GroupDataEntity)
 	@ApiProperty({
 		description: 'Foreign key as groupId',
@@ -74,7 +74,7 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		unique: false,
 		allowNull: false
 	})
-	declare groupId: string;
+	declare groupDataId: string;
 
 
 	@BelongsTo(()=> CategoryEntity, {onDelete: 'casCade'})

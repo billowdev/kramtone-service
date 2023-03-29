@@ -77,10 +77,10 @@ module.exports = {
 			}
 		]
 
-		return queryInterface.bulkInsert('group', groupData)
+		return queryInterface.bulkInsert('group_data', groupData)
 	},
 
 	down: async (queryInterface: QueryInterface) => {
-		return queryInterface.bulkDelete('group', null, {})
+		return queryInterface.bulkDelete('group_data', null, {})
 	}
 };

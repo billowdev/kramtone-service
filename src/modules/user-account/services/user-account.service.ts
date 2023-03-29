@@ -91,12 +91,10 @@ export class UserService {
   }
 
   // repository
-
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     try {
       return await this.userRepo.create<UserEntity>(createUserDto)
     } catch (error) {
-      console.log(error)
       throw new BadRequestException()
     }
   }
@@ -262,9 +260,6 @@ export class UserService {
       const token = await this.generateToken(payload);
       return { user: userData, token };
     } catch (error) {
-      console.log('=========== err =========================');
-      console.log(error);
-      console.log('====================================');
       throw new BadRequestException()
     }
   }
