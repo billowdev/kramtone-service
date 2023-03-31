@@ -32,7 +32,7 @@ async function bootstrap() {
   // })
 
   // Use helmet to secure the app with various HTTP headers
-  app.use(helmet());
+  // app.use(helmet());
 
   // Limit the number of requests a client can make to the API
   app.use(
