@@ -20,12 +20,12 @@ export const databaseProviders = [{
       switch (process.env.NODE_ENV) {
          case DEVELOPMENT:
             config = dbConfig.development;
-            isForceValue = booleanifyUtil(DB_IS_FORCE_DEV) || true
+            isForceValue = booleanifyUtil(DB_IS_FORCE_DEV)
             isForce = isForceValue
             break;
          case TEST:
             config = dbConfig.test;
-            isForceValue = booleanifyUtil(DB_IS_FORCE_TEST) || true
+            isForceValue = booleanifyUtil(DB_IS_FORCE_TEST)
             isForce = isForceValue
             break;
          case PRODUCTION:
@@ -47,6 +47,9 @@ export const databaseProviders = [{
          GroupColorSchemeEntity
       ]);
       // { force: true } should be fasle in production
+      console.log("============")
+      console.log(isForce)
+      console.log("============")
       await sequelize.sync({ force: isForce });
       return sequelize;
    },

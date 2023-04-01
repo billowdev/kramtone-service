@@ -72,23 +72,25 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 
 	@ApiProperty({
 		description: 'logo image',
-		example: 'default_image.png',
+		example: 'logo.png',
 		nullable: true,
 		maxLength: 255
 	})
 	@Column({
-		type: DataType.STRING(255)
+		type: DataType.STRING(255),
+		defaultValue: 'logo.png'
 	})
 	declare logo: string;
 
 	@ApiProperty({
 		description: 'banner image',
-		example: 'default_image.png',
+		example: 'banner.png',
 		nullable: true,
 		maxLength: 255
 	})
 	@Column({
-		type: DataType.STRING(255)
+		type: DataType.STRING(255),
+		defaultValue: 'banner.png'
 	})
 	declare banner: string;
 

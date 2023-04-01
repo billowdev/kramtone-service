@@ -31,4 +31,12 @@ export class TokenDto {
 	@IsNotEmpty()
 	activated: boolean;
 
+	@ApiProperty({
+		description: 'The group id from session',
+		example: 'd420c5d2-6cb7-44d1-b28e-619681f872cc'
+	})
+	@IsString()
+	@IsNotEmpty()
+	gid: string;
+
 }

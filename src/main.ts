@@ -16,31 +16,31 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(prefix, app, document);
 
-  // const corsWhitelist = [
-  //   CLIENT_URL_DEV,
-  //   CLIENT_URL_PROD
-  // ]
-  // app.enableCors({
-  //   credentials: true,
-  //   origin: function (origin, callback) {
-  //     if (!origin || corsWhitelist.indexOf(origin) !== -1) {
-  //       callback(null, true)
-  //     } else {
-  //       callback(new Error('Not allowed by CORS'))
-  //     }
-  //   }
-  // })
+  const corsWhitelist = [
+    CLIENT_URL_DEV,
+    CLIENT_URL_PROD
+  ]
+  app.enableCors({
+    credentials: true,
+    origin: function (origin, callback) {
+      if (!origin || corsWhitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    }
+  })
 
   // Use helmet to secure the app with various HTTP headers
   // app.use(helmet());
 
   // Limit the number of requests a client can make to the API
-  app.use(
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 15 minutes
-      max: 300, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  // app.use(
+  //   rateLimit({
+  //     windowMs: 60 * 60 * 1000, // 15 minutes
+  //     max: 300, // limit each IP to 100 requests per windowMs
+  //   }),
+  // );
 
   app.useGlobalFilters(new HttpExceptionFilter())
 

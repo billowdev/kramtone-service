@@ -74,3 +74,8 @@ export const ApiGroupUpdateBadRequestResponse: ApiResponseOptions = {
 		}
 	}
 }
+
+
+
+export const ApiGroupGetImageOkResponse: ApiResponseOptions = {}
+export const ApiGroupGetImageBadRequestResponse: ApiResponseOptions = {}

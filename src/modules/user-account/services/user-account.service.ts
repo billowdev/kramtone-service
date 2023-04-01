@@ -79,10 +79,10 @@ export class UserService {
 
   public async refreshToken(auth: TokenDto): Promise<TokenDto> {
     try {
-      const { sub, role, activated } = auth
-      const refreshToken: string = await this.generateToken({ sub, role, activated});
+      const { sub, role, activated, gid } = auth
+      const refreshToken: string = await this.generateToken({ sub, role, activated, gid});
       const payload: TokenDto = {
-        sub, role, refreshToken, activated
+        sub, role, refreshToken, activated, gid
       }
       return payload
     } catch (error) {
@@ -194,9 +194,9 @@ export class UserService {
     try {
       // find user id and role from auth
       const user: UserEntity = await this.findOneByUsername(body.username)
-      const { id, role, activated } = user
+      const { id, role, activated, groupId} = user
       delete user.hashPassword
-      const payload = { sub: id, role, activated }
+      const payload = { sub: id, role, activated, gid: groupId}
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
       const encrypt: string = encryptAES(SignData);
@@ -227,7 +227,8 @@ export class UserService {
       const payload = {
         sub: createUser['dataValues'].id,
         role: createUser['dataValues'].role,
-        activated: createUser['dataValues'].activated
+        activated: createUser['dataValues'].activated,
+        gid: createUser['dataValues'].groupId
       }
       const token = await this.generateToken(payload);
       return { user: userData, token };

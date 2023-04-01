@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { Query } from '@nestjs/common/decorators';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Query, Res } from '@nestjs/common/decorators';
+import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GetSession } from '../../../common/decorators/auth.decorator';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { JwtAuthGuard, RolesGuard } from '../../../common/guards';
@@ -11,7 +11,7 @@ import { GroupDataService } from '../services/group-data.service';
 import { CreateGroupDataResponseType, GetAllGroupDataResponseType, GroupDataArrayType } from '../types/group-data.types';
 import { requestErrorResponse, requestFailResponse, requestOkResponse } from './../../../common/utils/generate-response.util';
 import { GroupDataEntity } from './../entities/group-data.entity';
-import { ApiGroupBody } from '../group-data.document';
+import { ApiGroupBody, ApiGroupGetImageBadRequestResponse, ApiGroupGetImageOkResponse } from '../group-data.document';
 import { SessionDto } from '../../user-account/dto/session.dto';
 
 @ApiTags('Groups')
@@ -87,4 +87,14 @@ export class GroupDataController {
       return requestFailResponse(400, 'delete group was failed')
     }
   }
+
+  @ApiOkResponse(ApiGroupGetImageOkResponse)
+  @ApiBadRequestResponse(ApiGroupGetImageBadRequestResponse)
+  @Get('/images/:image_name')
+  requestImages(@Param('image_name') image, @Res() res) {
+    res.sendFile(image, { root: './public/uploaded/images/groups' });
+  }
+
+
+  
 }
