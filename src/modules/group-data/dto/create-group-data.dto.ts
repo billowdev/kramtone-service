@@ -3,20 +3,20 @@ import { GroupTypeEnum } from '../types/group-data.types.enum';
 
 export class CreateGroupDto {
 	@IsString()
-	@IsNotEmpty()
-	groupName: string;
+	@IsOptional()
+	groupName?: string;
 
 	@IsEnum(GroupTypeEnum)
-	@IsNotEmpty()
-	groupType: GroupTypeEnum;
+	@IsOptional()
+	groupType?: GroupTypeEnum;
 
 	@IsString()
-	@IsNotEmpty()
-	agency: string;
+	@IsOptional()
+	agency?: string;
 
 	@IsString()
-	@IsNotEmpty()
-	phone: string;
+	@IsOptional()
+	phone?: string;
 
 	@IsString()
 	@IsOptional()

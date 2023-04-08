@@ -132,6 +132,7 @@ export class GroupDataService {
 
   async update(id: string, updateGroupDto: UpdateGroupDto, user: any): Promise<number[]> {
     try {
+  
       if (user.role === Role.ADMIN) {
         return await this.groupRepo.update<GroupDataEntity>({
           ...updateGroupDto
@@ -141,10 +142,7 @@ export class GroupDataService {
           }
         )
       } else {
-        const { groupId } = await this.userService.findOne(user.sub)
-
-        if (groupId === id) {
-          if (updateGroupDto.verified) delete updateGroupDto.verified
+        if (user.gid === id) {
           return await this.groupRepo.update<GroupDataEntity>({
             ...updateGroupDto
           },

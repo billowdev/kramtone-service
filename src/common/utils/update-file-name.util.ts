@@ -13,6 +13,18 @@ export const updateFileName = (
 	callback(null, `${userId}-${name}${fileExtName}`);
 };
 
+export const updateGroupFileName = (
+	req: Request,
+	file: Express.Multer.File,
+	callback
+) => {
+	const user: any = req.user
+	const gid = user?.gid
+	const name = file.originalname.split('.')[0];
+	const fileExtName = extname(file.originalname);
+	callback(null, `${gid}-${name}${fileExtName}`);
+};
+
 export const updateCategoryFileName = (
 	req: Request,
 	file: Express.Multer.File,
