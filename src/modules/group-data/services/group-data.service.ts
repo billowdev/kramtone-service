@@ -8,6 +8,7 @@ import { Op } from 'sequelize';
 import { UserEntity } from './../../user-account/entities/user-account.entity';
 import { Role } from '../../user-account/types/role.enum';
 import { UserService } from './../../user-account/services/user-account.service';
+import removeNullProperties from "../../../common/utils/removeNullProperties";
 
 @Injectable()
 export class GroupDataService {
@@ -132,19 +133,21 @@ export class GroupDataService {
 
   async update(id: string, updateGroupDto: UpdateGroupDto, user: any): Promise<number[]> {
     try {
-  
+      const newUpdate = removeNullProperties<UpdateGroupDto>(updateGroupDto)
+        console.log(newUpdate)
       if (user.role === Role.ADMIN) {
         return await this.groupRepo.update<GroupDataEntity>({
-          ...updateGroupDto
+          ...newUpdate
         },
           {
             where: { id }
           }
         )
       } else {
+
         if (user.gid === id) {
           return await this.groupRepo.update<GroupDataEntity>({
-            ...updateGroupDto
+            ...newUpdate
           },
             {
               where: { id }

@@ -20,6 +20,10 @@ export const updateGroupFileName = (
 ) => {
 	const user: any = req.user
 	const gid = user?.gid
+	const field = file.fieldname
+	console.log("===========field===========")
+	console.log(field)
+	console.log("===========field===========")
 	const name = file.originalname.split('.')[0];
 	const fileExtName = extname(file.originalname);
 	callback(null, `${gid}-${name}${fileExtName}`);

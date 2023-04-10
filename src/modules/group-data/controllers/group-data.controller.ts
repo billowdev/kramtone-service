@@ -15,8 +15,8 @@ import { ApiGroupBody, ApiGroupGetImageBadRequestResponse, ApiGroupGetImageOkRes
 import { SessionDto } from '../../user-account/dto/session.dto';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { updateGroupFileName } from 'src/common/utils/update-file-name.util';
-import { imageFileFilter } from 'src/common/utils/image-file-filter.util';
+import { updateGroupFileName } from '../../../common/utils/update-file-name.util';
+import { imageFileFilter } from '../../../common/utils/image-file-filter.util';
 
 @ApiTags('Groups')
 @Controller('groups')
@@ -87,34 +87,40 @@ export class GroupDataController {
   )
   @Patch(':id')
   async update(
-    @Param('id') id: string, 
-    @Body('groupData') groupData: any,
-    @UploadedFiles() file: { 
-      logoFile?: Express.Multer.File, 
+    @Param('id') id: string,
+    @Body('groupData') groupData: UpdateGroupDto,
+    @UploadedFiles() file: {
+      logoFile?: Express.Multer.File,
       bannerFile?: Express.Multer.File,
-    },
-    //  @UploadedFiles() logoFile: any,
-    @GetSession() user: SessionDto) {
+    }, @GetSession() user: SessionDto) {
     try {
-      console.log(groupData)
-      console.log(file)
-  
+      const  updateData = JSON.parse(`${groupData}`);
+      if(file?.logoFile){
 
-      // const logo = file.logoFile.originalname
-      // const banner = file.bannerFile.originalname
-      
-      // const payload: number[] = await this.groupDataService.update(id, updateGroupDto, user);
-      // if (payload[0] === 1) {
-      //   return requestOkResponse<number[]>(payload);
-      // } else if (payload[0] === 403) {
-      //   return requestFailResponse(403, 'update group data was failed, forbidden resource')
-      // }
-      return requestOkResponse<any>({});
+      }
+      console.log("============")
+      console.log(file)
+      console.log("============")
+
+      const updateGroupData = {
+        ...updateData,
+        logo: file?.logoFile?.[0]?.filename ?? null,
+        banner: file?.bannerFile?.[0]?.filename ?? null
+      }
+      const payload: number[] = await this.groupDataService.update(id, updateGroupData, user);
+      if (payload[0] === 1) {
+        return requestOkResponse<number[]>(payload);
+      } else if (payload[0] === 403) {
+        return requestFailResponse(403, 'update group data was failed, forbidden resource')
+      }
+      return requestOkResponse<number[]>(payload);
+
     } catch (error) {
+      console.log(error)
       return requestErrorResponse(400, 'something went wrong can\'t update group data');
     }
   }
-  
+
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('/delete/:id')
@@ -135,5 +141,5 @@ export class GroupDataController {
   }
 
 
-  
+
 }
