@@ -64,8 +64,8 @@ export class GroupDataController {
     }
   }
 
-  @Roles(Role.MEMBER, Role.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.MEMBER, Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
   // @UseInterceptors(FileInterceptor('logoFile', {
   //   storage: diskStorage({
   //     destination: './public/uploaded/images/groups',
@@ -73,6 +73,7 @@ export class GroupDataController {
   //   }),
   //   fileFilter: imageFileFilter
   // }))
+
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'logoFile', maxCount: 1 },
@@ -92,27 +93,32 @@ export class GroupDataController {
     @UploadedFiles() file: {
       logoFile?: Express.Multer.File,
       bannerFile?: Express.Multer.File,
-    }, @GetSession() user: SessionDto) {
+    },
+    @GetSession() user: SessionDto) {
     try {
-      const  updateData = JSON.parse(`${groupData}`);
-      if(file?.logoFile){
-
+      const updateData = JSON.parse(`${groupData}`);
+    
+      let logoName, bannerName
+      if (file.logoFile) {
+        logoName = file.logoFile[0].filename
+      } 
+      if(file.bannerFile){
+        bannerName = file.bannerFile[0].filename
       }
-      console.log("============")
-      console.log(file)
-      console.log("============")
-
+ 
       const updateGroupData = {
         ...updateData,
-        logo: file?.logoFile?.[0]?.filename ?? null,
-        banner: file?.bannerFile?.[0]?.filename ?? null
+        logo: logoName?? null,
+        banner: bannerName ?? null
       }
+
       const payload: number[] = await this.groupDataService.update(id, updateGroupData, user);
       if (payload[0] === 1) {
         return requestOkResponse<number[]>(payload);
       } else if (payload[0] === 403) {
         return requestFailResponse(403, 'update group data was failed, forbidden resource')
       }
+
       return requestOkResponse<number[]>(payload);
 
     } catch (error) {

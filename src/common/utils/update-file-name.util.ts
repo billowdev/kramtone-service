@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Request } from 'express';
 import { extname } from 'path';
 
@@ -21,12 +22,16 @@ export const updateGroupFileName = (
 	const user: any = req.user
 	const gid = user?.gid
 	const field = file.fieldname
-	console.log("===========field===========")
-	console.log(field)
-	console.log("===========field===========")
+	let prefix
+	if(field==='logoFile'){
+		prefix = 'logo'
+	}else{
+		prefix='banner'
+	}
 	const name = file.originalname.split('.')[0];
 	const fileExtName = extname(file.originalname);
-	callback(null, `${gid}-${name}${fileExtName}`);
+	callback(null, `${prefix}-${gid}-${name}${fileExtName}`);
+
 };
 
 export const updateCategoryFileName = (
