@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards, Res, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiConsumes, ApiTags, ApiOkResponse, ApiUnauthorizedResponse, ApiParam } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -47,9 +47,31 @@ export class ProductController {
   @ApiOkResponse(ApiProductGetAllOkRespose)
   @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
   @Get()
-  async findAllProduct(): Promise<ProductArrayResponseType> {
+  async findAllProduct(
+    @Query('keyword') keyword: string,
+    @Query('name') name: string,
+    @Query('desc') desc: string,
+    @Query('price') price: string,
+    @Query('groupDataId') groupDataId: string,
+    @Query('categoryId') categoryId: string,
+
+  ): Promise<ProductArrayResponseType> {
     try {
-      const payload: ProductArrayType = await this.productService.findAllProduct();
+      const payload: ProductArrayType = await this.productService.findAllProduct({keyword, name, desc, price, groupDataId, categoryId});
+      return requestOkResponse<ProductArrayType>(payload);
+    } catch (error) {
+      return requestErrorResponse(400, "get all product was failed")
+    }
+  }
+
+  @ApiOkResponse(ApiProductGetAllOkRespose)
+  @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
+  @Get('/group/:id')
+  async findAllProductByUser(
+    @Param('id') gid: string,
+  ): Promise<ProductArrayResponseType> {
+    try {
+      const payload: ProductArrayType = await this.productService.findAllProductByGroup(gid);
       return requestOkResponse<ProductArrayType>(payload);
     } catch (error) {
       return requestErrorResponse(400, "get all product was failed")

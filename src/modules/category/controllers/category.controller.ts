@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus, ParseIntPipe, Req } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiConsumes, ApiForbiddenResponse, ApiOkResponse, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -18,6 +18,8 @@ import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
 import { CateogoryArrayResponseType, CateogoryArrayType, CreateCategoryResponseType } from '../types/category.types';
 import { UserIsActivateAuthGuard } from './../../../common/guards/user-is-activate.guard';
+import { SessionDto } from 'src/modules/user-account/dto/session.dto';
+import { GetSession } from 'src/common/decorators/auth.decorator';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -34,11 +36,23 @@ export class CategoryController {
   @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
-  @Post()
-  async create(@Body() createCategoryDto: CreateCategoryDto): Promise<CreateCategoryResponseType> {
+  @Post(
+
+  )
+  async create(
+    @GetSession() user: SessionDto,
+    @Body() createCategoryDto: CreateCategoryDto): Promise<CreateCategoryResponseType> {
     try {
-      const payload: CategoryEntity = await this.categoryService.create(createCategoryDto);
-      return requestOkResponse<CategoryEntity>(payload);
+      if (user.role === Role.ADMIN) {
+        const newCategory = { ...createCategoryDto, isDefault: true }
+        const payload: CategoryEntity = await this.categoryService.create(newCategory);
+        return requestOkResponse<CategoryEntity>(payload);
+      } else {
+        const newCategory = { ...createCategoryDto, isDefault: false, groupId: user.gid }
+        const payload: CategoryEntity = await this.categoryService.create(newCategory);
+        return requestOkResponse<CategoryEntity>(payload);
+      }
+
     } catch (error) {
       return requestErrorResponse(400, 'create category was error');
     }
@@ -58,15 +72,53 @@ export class CategoryController {
     }
   }
 
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
+  @ApiOkResponse(ApiCategoryCreatedOkResponse)
+  @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @Get('group')
+  async findAllByGroup(
+    @GetSession() user: SessionDto
+  ): Promise<CateogoryArrayResponseType> {
+    try {
+      const { gid } = user
+      const payload: CateogoryArrayType = await this.categoryService.findAllByGroup(gid);
+      return requestOkResponse<CateogoryArrayType>(payload);
+    } catch (error) {
+      return requestErrorResponse(400, 'get all category was failed');
+    }
+  }
+  
+
+
+  @ApiOkResponse(ApiCategoryCreatedOkResponse)
+  @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @Get('group/:id')
+  async findAllByGroupId(
+    @Param('id') id: string
+    ): Promise<CateogoryArrayResponseType> {
+    try {
+      const payload: CateogoryArrayType = await this.categoryService.findAllByGroupId(id);
+      return requestOkResponse<CateogoryArrayType>(payload);
+    } catch (error) {
+      return requestErrorResponse(400, 'get all category was failed');
+    }
+  }
+
+
   @ApiParam(ApiCategoryParam)
   @ApiOkResponse(ApiCategoryGetOneOkResponse)
   @ApiBadRequestResponse(ApiCategoryGetOneBadRequestResponse)
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.BAD_REQUEST)
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id') id: string) {
     try {
-      const payload: CategoryEntity = await this.categoryService.findOne(+id);
+      const payload: CategoryEntity = await this.categoryService.findOne(id);
       return requestOkResponse<CategoryEntity>(payload)
     } catch (error) {
       return requestErrorResponse(400, 'get one category was failed')
@@ -85,9 +137,9 @@ export class CategoryController {
   @HttpCode(HttpStatus.FORBIDDEN)
   @HttpCode(HttpStatus.UNAUTHORIZED)
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateCategoryDto: UpdateCategoryDto) {
+  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     try {
-      const payload: number[] = await this.categoryService.update(+id, updateCategoryDto);
+      const payload: number[] = await this.categoryService.update(id, updateCategoryDto);
       return requestOkResponse<number[]>(payload)
     } catch (error) {
       return requestFailResponse(400, 'update category was failed');
@@ -106,9 +158,9 @@ export class CategoryController {
   @HttpCode(HttpStatus.FORBIDDEN)
   @HttpCode(HttpStatus.UNAUTHORIZED)
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id') id: string) {
     try {
-      const payload: number = await this.categoryService.remove(+id);
+      const payload: number = await this.categoryService.remove(id);
       return requestOkResponse<number>(payload)
     } catch (error) {
       return requestFailResponse(400, 'delte category was failed')
@@ -134,7 +186,7 @@ export class CategoryController {
     fileFilter: imageFileFilter
   }))
   @Post('/upload/:id')
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('id', ParseIntPipe) id: number):
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('id') id: string):
     Promise<any> {
     try {
       const category: CategoryEntity = await this.categoryService.findOne(id);
@@ -148,7 +200,7 @@ export class CategoryController {
         removeExistImage(oldImage, 'categories')
       }
       const updateCategory: UpdateCategoryDto = { ...category, image: imageFromReq }
-      const updateStatus: number[] = await this.categoryService.update(+id, updateCategory);
+      const updateStatus: number[] = await this.categoryService.update(id, updateCategory);
       if (!updateStatus[0]) throw new BadRequestException()
       const payload: any = {
         image: imageFromReq

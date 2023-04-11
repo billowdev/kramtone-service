@@ -70,11 +70,11 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	})
 	@Column({
 		type: DataType.UUID,
-		field: "group_data_id",
+		field: "group_id",
 		unique: false,
 		allowNull: false
 	})
-	declare groupDataId: string;
+	declare groupId: string;
 
 
 	@BelongsTo(()=> CategoryEntity, {onDelete: 'casCade'})

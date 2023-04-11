@@ -10,6 +10,11 @@ export class SessionDto {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
+	gid: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
 	role: string;
 
 	@ApiProperty()

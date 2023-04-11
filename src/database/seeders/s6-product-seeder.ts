@@ -5,7 +5,7 @@ type ProductType = {
 	name: string;
 	desc: string;
 	price: number;
-	group_data_id: string;
+	group_id: string;
 	category_id: string;
 	created_at: Date,
 	updated_at: Date
@@ -21,7 +21,7 @@ module.exports = {
 				name: "ผ้าพันคอ 1",
 				desc: "ผ้าคราม 1",
 				price: 200,
-				group_data_id: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
+				group_id: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
 				category_id: "51b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
 				created_at: new Date(),
 				updated_at: new Date(),
@@ -31,7 +31,7 @@ module.exports = {
 				name: "ผ้าพันคอ 2",
 				desc: "ผ้าคราม 2",
 				price: 200,
-				group_data_id: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
+				group_id: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
 				category_id: "51b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
 				created_at: new Date(),
 				updated_at: new Date(),
