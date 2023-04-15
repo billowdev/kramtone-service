@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus, ParseIntPipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus, ParseIntPipe, Req, UploadedFiles } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiConsumes, ApiForbiddenResponse, ApiOkResponse, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -52,7 +52,6 @@ export class CategoryController {
         const payload: CategoryEntity = await this.categoryService.create(newCategory);
         return requestOkResponse<CategoryEntity>(payload);
       }
-
     } catch (error) {
       return requestErrorResponse(400, 'create category was error');
     }
@@ -73,7 +72,7 @@ export class CategoryController {
   }
 
   @Roles(Role.ADMIN, Role.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOkResponse(ApiCategoryCreatedOkResponse)
   @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
   @HttpCode(HttpStatus.OK)
@@ -84,14 +83,13 @@ export class CategoryController {
   ): Promise<CateogoryArrayResponseType> {
     try {
       const { gid } = user
+      console.log(gid)
       const payload: CateogoryArrayType = await this.categoryService.findAllByGroup(gid);
       return requestOkResponse<CateogoryArrayType>(payload);
     } catch (error) {
       return requestErrorResponse(400, 'get all category was failed');
     }
   }
-  
-
 
   @ApiOkResponse(ApiCategoryCreatedOkResponse)
   @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
@@ -100,7 +98,7 @@ export class CategoryController {
   @Get('group/:id')
   async findAllByGroupId(
     @Param('id') id: string
-    ): Promise<CateogoryArrayResponseType> {
+  ): Promise<CateogoryArrayResponseType> {
     try {
       const payload: CateogoryArrayType = await this.categoryService.findAllByGroupId(id);
       return requestOkResponse<CateogoryArrayType>(payload);
@@ -108,7 +106,6 @@ export class CategoryController {
       return requestErrorResponse(400, 'get all category was failed');
     }
   }
-
 
   @ApiParam(ApiCategoryParam)
   @ApiOkResponse(ApiCategoryGetOneOkResponse)
@@ -132,13 +129,44 @@ export class CategoryController {
   @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './public/uploaded/images/categories',
+      filename: updateCategoryFileName,
+    }),
+    fileFilter: imageFileFilter
+  }))
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.BAD_REQUEST)
   @HttpCode(HttpStatus.FORBIDDEN)
   @HttpCode(HttpStatus.UNAUTHORIZED)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+  async update(@Param('id') id: string,
+    @Body('name') name: string,
+    @Body('desc') desc: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     try {
+      if(file){
+        const category: CategoryEntity = await this.categoryService.findOne(id);
+        const oldImage: string = category.image;
+        const imageFromReq: string = file.filename;
+        // if category already has an image. then delete it
+        if (
+          (oldImage !== "" || oldImage !== null) &&
+          (oldImage !== imageFromReq)) {
+          removeExistImage(oldImage, 'categories')
+        }
+  
+      }
+      console.log("===========================")
+      console.log(file)
+      console.log("===========================")
+      const updateCategoryDto = file ? {
+        name, desc,
+        image: file.filename
+      } : { name, desc };
+      
       const payload: number[] = await this.categoryService.update(id, updateCategoryDto);
       return requestOkResponse<number[]>(payload)
     } catch (error) {

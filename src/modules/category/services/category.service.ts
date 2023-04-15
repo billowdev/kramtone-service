@@ -33,7 +33,6 @@ export class CategoryService {
       return await this.categoryRepo.findAll<CategoryEntity>({
         where: {
           groupId,
-          isDefault: false
         },
         attributes: {
           exclude: ['groupId']
