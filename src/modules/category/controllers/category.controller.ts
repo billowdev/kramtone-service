@@ -36,13 +36,27 @@ export class CategoryController {
   @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
-  @Post(
-
-  )
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './public/uploaded/images/categories',
+      filename: updateCategoryFileName,
+    }),
+    fileFilter: imageFileFilter
+  }))
+  @Post()
   async create(
     @GetSession() user: SessionDto,
-    @Body() createCategoryDto: CreateCategoryDto): Promise<CreateCategoryResponseType> {
-    try {
+    @Body('name') name: string,
+    @Body('desc') desc: string,
+    @UploadedFile() file?: Express.Multer.File,
+    // @Body() createCategoryDto: CreateCategoryDto
+    ): Promise<CreateCategoryResponseType> {
+      try {
+      const createCategoryDto = file ? {
+        name, desc,
+        image: file.filename
+      } : { name, desc };
+
       if (user.role === Role.ADMIN) {
         const newCategory = { ...createCategoryDto, isDefault: true }
         const payload: CategoryEntity = await this.categoryService.create(newCategory);
@@ -83,7 +97,7 @@ export class CategoryController {
   ): Promise<CateogoryArrayResponseType> {
     try {
       const { gid } = user
-      console.log(gid)
+      // console.log(gid)
       const payload: CateogoryArrayType = await this.categoryService.findAllByGroup(gid);
       return requestOkResponse<CateogoryArrayType>(payload);
     } catch (error) {
@@ -159,9 +173,7 @@ export class CategoryController {
         }
   
       }
-      console.log("===========================")
-      console.log(file)
-      console.log("===========================")
+
       const updateCategoryDto = file ? {
         name, desc,
         image: file.filename
