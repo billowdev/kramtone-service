@@ -21,9 +21,11 @@ export class ProductService {
     @Inject(PRODUCT_IMAGE_REPOSITORY) private readonly productImageRepo: typeof ProductImageEntity
   ) { }
 
-  async createProduct(createProductDto: CreateProductDto): Promise<ProductEntity> {
+  async createProduct(createProductDto: any): Promise<ProductEntity> {
     try {
-      return await this.productRepo.create<ProductEntity>(createProductDto);
+      const response =  await this.productRepo.create<ProductEntity>(createProductDto);
+   
+      return response
     } catch (error) {
       throw new BadRequestException()
     }

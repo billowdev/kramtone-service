@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards, Res, Query } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards, Res, Query, Req, UploadedFiles } from '@nestjs/common';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiConsumes, ApiTags, ApiOkResponse, ApiUnauthorizedResponse, ApiParam } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { Roles } from '../../../common/decorators/roles.decorator';
@@ -16,11 +16,16 @@ import { ProductEntity } from '../entities/product.entity';
 import { ProductService } from '../services/product.service';
 import { CreateProductImageResponseType, DeleteProductImageResponseType, GetOneProductResponseType, ProductArrayResponseType, ProductArrayType } from '../types/product.types';
 import { ApiProductCreateBadRequestResponse, ApiProductCreateOkResponse, ApiProductGetOneOkResponse, ApiProductParam, ApiProductGetOneBadRequestResponse, ApiProductUpdateOkResponse, ApiProductUpdateBadRequestResponse, ApiProductDeleteOkResponse, ApiProductDeleteBadRequestResponse, ApiProductGetImageOkResponse, ApiProductGetImageBadRequestResponse, ApiProductGetAllOkRespose } from './../product.document';
-
+import { v4 as uuid } from 'uuid';
+import fs from 'fs';
+import { FormDataInterceptor } from 'src/common/interceptors/form-data.interceptor';
+import { ProductInterceptor } from 'src/common/interceptors/product.interceptor';
+import { extname } from 'path';
 
 @ApiTags('Product')
 @Controller('products')
 export class ProductController {
+ 
   constructor(
     private readonly productService: ProductService
   ) { }
@@ -28,20 +33,66 @@ export class ProductController {
 
   // ============================ Product ===================================
 
-  @Roles(Role.ADMIN, Role.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiOkResponse(ApiProductCreateOkResponse)
-  @ApiBadRequestResponse(ApiProductCreateBadRequestResponse)
-  @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @ApiOkResponse(ApiProductCreateOkResponse)
+  // @ApiBadRequestResponse(ApiProductCreateBadRequestResponse)
+  // @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
+  // @Post()
+  // async createProduct(@Body() createProductDto: CreateProductDto) {
+  //   try {
+  //     const payload: ProductEntity = await this.productService.createProduct(createProductDto);
+  //     return requestOkResponse<ProductEntity>(payload)
+  //   } catch (error) {
+  //     return requestErrorResponse(400, "create product was error")
+  //   }
+  // }
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(FileInterceptor('images'))
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'images', maxCount: 10 },
+  ], {
+    storage: diskStorage({
+      destination: './public/uploaded/images/products',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        const extension = extname(file.originalname);
+        cb(null, `${randomName}${extension}`);
+      },
+    }),
+  }))
+
+
   @Post()
-  async createProduct(@Body() createProductDto: CreateProductDto) {
+  async createProduct(
+    @UploadedFiles() files,
+    @Body() body,
+  ) {
     try {
-      const payload: ProductEntity = await this.productService.createProduct(createProductDto);
-      return requestOkResponse<ProductEntity>(payload)
+      const product: CreateProductDto = JSON.parse(body.product)
+
+      const payload: ProductEntity = await this.productService.createProduct(product);
+      const productId = payload.id;
+      console.log("=====================")
+      console.log(productId)
+      console.log("=====================")
+      // ... Create a new product image for each uploaded file ...
+      for (const file of files.images) {
+        const { originalname, size, filename } = file;
+        await this.productService.createProductImage({
+          productId,
+          image: filename,
+          // originalname,
+          // size,
+        });
+      }
+      return requestOkResponse<any>(product);
     } catch (error) {
-      return requestErrorResponse(400, "create product was error")
+      return requestErrorResponse(400, 'create product was error');
     }
   }
+
 
 
   @ApiOkResponse(ApiProductGetAllOkRespose)
@@ -57,7 +108,7 @@ export class ProductController {
 
   ): Promise<ProductArrayResponseType> {
     try {
-      const payload: ProductArrayType = await this.productService.findAllProduct({keyword, name, desc, price, groupDataId, categoryId});
+      const payload: ProductArrayType = await this.productService.findAllProduct({ keyword, name, desc, price, groupDataId, categoryId });
       return requestOkResponse<ProductArrayType>(payload);
     } catch (error) {
       return requestErrorResponse(400, "get all product was failed")
