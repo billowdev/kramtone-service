@@ -13,6 +13,7 @@ import sequelize from 'sequelize';
 import { Op } from 'sequelize';
 import isAllValuesUndefined from 'src/common/utils/is-all-undefined';
 import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
+import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
 
 @Injectable()
 export class ProductService {
@@ -59,7 +60,7 @@ export class ProductService {
           exclude: ['groupDataId', 'categoryId']
         }
       });
-     
+
       return products;
     } catch (error) {
       throw new BadRequestException()
@@ -120,30 +121,31 @@ export class ProductService {
 
   async findOneProduct(id: string): Promise<ProductEntity> {
     try {
-      return await this.productRepo.findByPk<ProductEntity>(id, {
-        // include: [
-        //   {
-        //     model: CategoryEntity as null,
-        //     attributes: {
-        //       exclude: ['image', 'desc', 'createdAt', 'updatedAt']
-        //     }
-        //   },
-        //   {
-        //     model: ProductImageEntity as null,
-        //     attributes: {
-        //       exclude: ['productId', 'createdAt', 'updatedAt']
-        //     }
-        //   },
-        //   {
-        //     model: UserEntity as null,
-        //     attributes: {
-        //       exclude: ['shopOwner', 'authId', 'addressId', 'createdAt', 'updatedAt']
-        //     }
-        //   }
-        // ],
-        // attributes: {
-        //   exclude: ['userId', 'categoryId']
-        // }
+      return await this.productRepo.findOne<ProductEntity>({
+        where: { id },
+        include: [
+          {
+            model: CategoryEntity as null,
+            attributes: {
+              exclude: ['image', 'desc', 'createdAt', 'updatedAt', 'isDefault', 'groupId']
+            }
+          },
+          {
+            model: ProductImageEntity as null,
+            attributes: {
+              exclude: ['productId', 'createdAt', 'updatedAt']
+            }
+          },
+          {
+            model: GroupDataEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt', 'verified']
+            }
+          }
+        ],
+        attributes: {
+          exclude: ['groupId', 'categoryId']
+        }
       });
     } catch (error) {
       throw new BadRequestException()
@@ -188,9 +190,22 @@ export class ProductService {
     }
   }
 
-  async removeProductImage(id: string): Promise<number> {
+  async removeProductImage(id: string, productId: string): Promise<number> {
     try {
-      return await this.productImageRepo.destroy({ where: { id } })
+      console.log("==============")
+
+      const image = await this.productImageRepo.findOne({
+        where: { id, productId },
+        raw: true
+      })
+      if (image) {
+        removeExistImage(image.image, 'products')
+      }
+      console.log(id, productId)
+
+      console.log("==============")
+
+      return await this.productImageRepo.destroy({ where: { id, productId } })
     } catch (error) {
       throw new BadRequestException()
     }

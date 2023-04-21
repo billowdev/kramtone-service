@@ -209,10 +209,14 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
   @ApiParam(ApiProductParam)
-  @Delete(':id')
-  async removeProductImage(@Param('id') id: string): Promise<DeleteProductImageResponseType> {
+  @Delete('/:productId/images/:id')
+  async removeProductImage(
+    @Param('id') id: string,
+    @Param('productId') productId: string
+  ): Promise<DeleteProductImageResponseType> {
     try {
-      const payload: number = await this.productService.removeProductImage(id);
+      const payload: number = await this.productService.removeProductImage(id, productId);
+      
       return requestOkResponse<number>(payload);
     } catch (error) {
       return requestErrorResponse(400, "delete product image was failed")
