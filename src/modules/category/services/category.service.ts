@@ -18,13 +18,49 @@ export class CategoryService {
 
   async findAll(): Promise<CategoryEntity[]> {
     try {
-      return await this.categoryRepo.findAll<CategoryEntity>()
+      return await this.categoryRepo.findAll<CategoryEntity>({
+        where: {
+          isDefault: true
+        }
+      })
     } catch (error) {
       throw new BadRequestException()
     }
   }
 
-  async findOne(id: number): Promise<CategoryEntity> {
+  async findAllByGroup(groupId: string): Promise<CategoryEntity[]> {
+    try {
+      return await this.categoryRepo.findAll<CategoryEntity>({
+        where: {
+          groupId,
+        },
+        attributes: {
+          exclude: ['groupId']
+        }
+      })
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async findAllByGroupId(groupId: string): Promise<CategoryEntity[]> {
+    try {
+      return await this.categoryRepo.findAll<CategoryEntity>({
+        where: {
+          groupId,
+          isDefault: false
+        },
+        attributes: {
+          exclude: ['groupId']
+        }
+      })
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+
+  async findOne(id: string): Promise<CategoryEntity> {
     try {
       return await this.categoryRepo.findOne<CategoryEntity>({ where: { id }, raw: true });
     } catch (error) {
@@ -32,7 +68,7 @@ export class CategoryService {
     }
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<number[]> {
+  async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<number[]> {
     try {
       return await this.categoryRepo.update<CategoryEntity>({ ...updateCategoryDto }, { where: { id } })
     } catch (error) {
@@ -40,7 +76,7 @@ export class CategoryService {
     }
   }
 
-  async remove(id: number): Promise<number> {
+  async remove(id: string): Promise<number> {
     try {
       return await this.categoryRepo.destroy<CategoryEntity>({ where: { id } })
     } catch (error) {

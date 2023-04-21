@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { Request } from 'express';
 import { extname } from 'path';
+import { randomBytes } from 'crypto';
 
 export const updateFileName = (
 	req: Request,
@@ -33,17 +34,19 @@ export const updateGroupFileName = (
 	callback(null, `${prefix}-${gid}-${name}${fileExtName}`);
 
 };
-
 export const updateCategoryFileName = (
 	req: Request,
 	file: Express.Multer.File,
 	callback
-) => {
-	const categoryId = req.params.id
+  ) => {
+	const user: any = req.user;
+	const gid = user?.gid;
 	const name = file.originalname.split('.')[0];
 	const fileExtName = extname(file.originalname);
-	callback(null, `${categoryId}-${name}${fileExtName}`);
-};
+	const randomStr = randomBytes(5).toString('hex'); // Generates a random string of 10 characters
+  
+	callback(null, `${gid}-${name}-${randomStr}-${fileExtName}`);
+  };
 
 export const updateProductFileName = (
 	req: Request,

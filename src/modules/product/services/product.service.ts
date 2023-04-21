@@ -8,7 +8,12 @@ import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
 import { ProductImageEntity } from '../entities/product-image.entity';
 import { ProductEntity } from '../entities/product.entity';
-import { ProductImageArrayType } from '../types/product.types';
+import { ProductImageArrayType, ProductQueryInterface } from '../types/product.types';
+import sequelize from 'sequelize';
+import { Op } from 'sequelize';
+import isAllValuesUndefined from 'src/common/utils/is-all-undefined';
+import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
+import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
 
 @Injectable()
 export class ProductService {
@@ -17,73 +22,130 @@ export class ProductService {
     @Inject(PRODUCT_IMAGE_REPOSITORY) private readonly productImageRepo: typeof ProductImageEntity
   ) { }
 
-  async createProduct(createProductDto: CreateProductDto): Promise<ProductEntity> {
+  async createProduct(createProductDto: any): Promise<ProductEntity> {
     try {
-      return await this.productRepo.create<ProductEntity>(createProductDto);
+      const response = await this.productRepo.create<ProductEntity>(createProductDto);
+
+      return response
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+  async findAllProductByGroup(groupId: string): Promise<ProductEntity[]> {
+    try {
+
+      const products = await this.productRepo.findAll({
+        where: { groupId },
+        include: [
+          {
+            model: CategoryEntity as null,
+            attributes: {
+              exclude: ['image', 'desc', 'createdAt', 'updatedAt', 'isDefault', 'groupId']
+            }
+          },
+          {
+            model: ProductImageEntity as null,
+            attributes: {
+              exclude: ['productId', 'createdAt', 'updatedAt']
+            }
+          },
+          {
+            model: GroupDataEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt', 'verified']
+            }
+          }
+        ],
+        attributes: {
+          exclude: ['groupDataId', 'categoryId']
+        }
+      });
+
+      return products;
     } catch (error) {
       throw new BadRequestException()
     }
   }
 
-
-  async findAllProduct(): Promise<ProductEntity[]> {
+  async findAllProduct(q: ProductQueryInterface): Promise<ProductEntity[]> {
     try {
-      return await this.productRepo.findAll<ProductEntity>({
-        // include: [
-        //   {
-        //     model: CategoryEntity as null,
-        //     attributes: {
-        //       exclude: ['image', 'desc', 'createdAt', 'updatedAt']
-        //     }
-        //   },
-        //   {
-        //     model: ProductImageEntity as null,
-        //     attributes: {
-        //       exclude: ['productId', 'createdAt', 'updatedAt']
-        //     }
-        //   },
-        //   {
-        //     model: UserEntity as null,
-        //     attributes: {
-        //       exclude: ['shopOwner', 'authId', 'addressId', 'createdAt', 'updatedAt']
-        //     }
-        //   }
-        // ],
-        // attributes: {
-        //   exclude: ['userId', 'categoryId']
-        // }
-      });
+      const products = await this.productRepo.findAll();
+      return products;
     } catch (error) {
+      console.log(error)
       throw new BadRequestException()
     }
+    // try {
+    //   let whereClause = {};
+    //   const searchableFields = [
+    //     "name",
+    //     "desc",
+    //     "price",
+    //     // "groupDataId",
+    //     // "categoryId",
+    //   ];
+
+    //   if (!isAllValuesUndefined(q)) {
+    //     whereClause = {
+    //       [Op.or]: searchableFields.map((field) => ({
+    //         [field]: {
+    //           [Op.like]: `%${q[field]}%`,
+    //         },
+    //       })),
+    //     };
+    //     if (q.keyword) {
+    //       whereClause = {
+    //         ...whereClause,
+    //         [Op.or]: [
+    //           ...searchableFields.map((field) =>
+    //            sequelize.where(sequelize.fn("LOWER", sequelize.col(field)), "LIKE", `%${q.keyword}%`)),
+    //         ],
+    //       };
+    //     }
+    //   }
+
+    //   const response = await this.productRepo.findAll({
+    //     where: whereClause,
+    //     // raw: true
+    //   });
+
+
+    //   return response;
+    // } catch (error) {
+    //   console.log(error)
+    //   throw new BadRequestException('Unable to retrieve all product')
+    // }
+
+
   }
 
   async findOneProduct(id: string): Promise<ProductEntity> {
     try {
-      return await this.productRepo.findByPk<ProductEntity>(id, {
-        // include: [
-        //   {
-        //     model: CategoryEntity as null,
-        //     attributes: {
-        //       exclude: ['image', 'desc', 'createdAt', 'updatedAt']
-        //     }
-        //   },
-        //   {
-        //     model: ProductImageEntity as null,
-        //     attributes: {
-        //       exclude: ['productId', 'createdAt', 'updatedAt']
-        //     }
-        //   },
-        //   {
-        //     model: UserEntity as null,
-        //     attributes: {
-        //       exclude: ['shopOwner', 'authId', 'addressId', 'createdAt', 'updatedAt']
-        //     }
-        //   }
-        // ],
-        // attributes: {
-        //   exclude: ['userId', 'categoryId']
-        // }
+      return await this.productRepo.findOne<ProductEntity>({
+        where: { id },
+        include: [
+          {
+            model: CategoryEntity as null,
+            attributes: {
+              exclude: ['image', 'desc', 'createdAt', 'updatedAt', 'isDefault', 'groupId']
+            }
+          },
+          {
+            model: ProductImageEntity as null,
+            attributes: {
+              exclude: ['productId', 'createdAt', 'updatedAt']
+            }
+          },
+          {
+            model: GroupDataEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt', 'verified']
+            }
+          }
+        ],
+        attributes: {
+          exclude: ['groupId', 'categoryId']
+        }
       });
     } catch (error) {
       throw new BadRequestException()
@@ -92,6 +154,9 @@ export class ProductService {
 
   async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<number[]> {
     try {
+      console.log("\nupdateProductDto\n")
+      console.log(updateProductDto)
+      console.log("\nupdateProductDto")
       const product = await this.productRepo.update<ProductEntity>({ ...updateProductDto }, { where: { id } })
       return product
     } catch (error) {
@@ -109,6 +174,20 @@ export class ProductService {
 
   // ============================ Product Image ===================================
   async createProductImage(createProductImageDto: CreateProductImageDto): Promise<ProductImageEntity> {
+    try {
+      const productImageCount = await this.productImageRepo.findAndCountAll({
+        where: {
+          productId: createProductImageDto.productId
+        }
+      });
+
+      if (productImageCount.count > 10) throw new BadRequestException()
+      return await this.productImageRepo.create<ProductImageEntity>(createProductImageDto);
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+  async createUploadNewProductImage(createProductImageDto: CreateProductImageDto): Promise<ProductImageEntity> {
     try {
       const productImageCount = await this.productImageRepo.findAndCountAll();
       if (productImageCount.count > 10) throw new BadRequestException()
@@ -128,9 +207,22 @@ export class ProductService {
     }
   }
 
-  async removeProductImage(id: string): Promise<number> {
+  async removeProductImage(id: string, productId: string): Promise<number> {
     try {
-      return await this.productImageRepo.destroy({ where: { id } })
+      console.log("==============")
+
+      const image = await this.productImageRepo.findOne({
+        where: { id, productId },
+        raw: true
+      })
+      if (image) {
+        removeExistImage(image.image, 'products')
+      }
+      console.log(id, productId)
+
+      console.log("==============")
+
+      return await this.productImageRepo.destroy({ where: { id, productId } })
     } catch (error) {
       throw new BadRequestException()
     }

@@ -5,7 +5,7 @@ export type ProductAttributes = {
 	declare name: string;
 	declare desc: string;
 	declare price: number;
-	declare userId: string;
+	declare groupId: string;
 	declare categoryId: number;
 	declare createdAt: Date;
 	declare updatedAt: Date;

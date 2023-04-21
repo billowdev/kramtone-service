@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards, Res } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards, Res, Query, Req, UploadedFiles } from '@nestjs/common';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiConsumes, ApiTags, ApiOkResponse, ApiUnauthorizedResponse, ApiParam } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { Roles } from '../../../common/decorators/roles.decorator';
@@ -16,11 +16,16 @@ import { ProductEntity } from '../entities/product.entity';
 import { ProductService } from '../services/product.service';
 import { CreateProductImageResponseType, DeleteProductImageResponseType, GetOneProductResponseType, ProductArrayResponseType, ProductArrayType } from '../types/product.types';
 import { ApiProductCreateBadRequestResponse, ApiProductCreateOkResponse, ApiProductGetOneOkResponse, ApiProductParam, ApiProductGetOneBadRequestResponse, ApiProductUpdateOkResponse, ApiProductUpdateBadRequestResponse, ApiProductDeleteOkResponse, ApiProductDeleteBadRequestResponse, ApiProductGetImageOkResponse, ApiProductGetImageBadRequestResponse, ApiProductGetAllOkRespose } from './../product.document';
-
+import { v4 as uuid } from 'uuid';
+import fs from 'fs';
+import { FormDataInterceptor } from 'src/common/interceptors/form-data.interceptor';
+import { ProductInterceptor } from 'src/common/interceptors/product.interceptor';
+import { extname } from 'path';
 
 @ApiTags('Product')
 @Controller('products')
 export class ProductController {
+
   constructor(
     private readonly productService: ProductService
   ) { }
@@ -28,28 +33,92 @@ export class ProductController {
 
   // ============================ Product ===================================
 
-  @Roles(Role.ADMIN, Role.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiOkResponse(ApiProductCreateOkResponse)
-  @ApiBadRequestResponse(ApiProductCreateBadRequestResponse)
-  @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @ApiOkResponse(ApiProductCreateOkResponse)
+  // @ApiBadRequestResponse(ApiProductCreateBadRequestResponse)
+  // @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
+  // @Post()
+  // async createProduct(@Body() createProductDto: CreateProductDto) {
+  //   try {
+  //     const payload: ProductEntity = await this.productService.createProduct(createProductDto);
+  //     return requestOkResponse<ProductEntity>(payload)
+  //   } catch (error) {
+  //     return requestErrorResponse(400, "create product was error")
+  //   }
+  // }
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(FileInterceptor('images'))
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'images', maxCount: 10 },
+  ], {
+    storage: diskStorage({
+      destination: './public/uploaded/images/products',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        const extension = extname(file.originalname);
+        cb(null, `${randomName}${extension}`);
+      },
+    }),
+  }))
   @Post()
-  async createProduct(@Body() createProductDto: CreateProductDto) {
+  async createProduct(
+    @UploadedFiles() files,
+    @Body() body,
+  ) {
     try {
-      const payload: ProductEntity = await this.productService.createProduct(createProductDto);
-      return requestOkResponse<ProductEntity>(payload)
+      const product: CreateProductDto = JSON.parse(body.product)
+
+      const payload: ProductEntity = await this.productService.createProduct(product);
+      const productId = payload.id;
+
+      // ... Create a new product image for each uploaded file ...
+      for (const file of files.images) {
+        const { originalname, size, filename } = file;
+        await this.productService.createProductImage({
+          productId,
+          image: filename,
+          // originalname,
+          // size,
+        });
+      }
+      return requestOkResponse<any>(product);
     } catch (error) {
-      return requestErrorResponse(400, "create product was error")
+      return requestErrorResponse(400, 'create product was error');
     }
   }
+
 
 
   @ApiOkResponse(ApiProductGetAllOkRespose)
   @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
   @Get()
-  async findAllProduct(): Promise<ProductArrayResponseType> {
+  async findAllProduct(
+    @Query('keyword') keyword: string,
+    @Query('name') name: string,
+    @Query('desc') desc: string,
+    @Query('price') price: string,
+    @Query('groupDataId') groupId: string,
+    @Query('categoryId') categoryId: string,
+
+  ): Promise<ProductArrayResponseType> {
     try {
-      const payload: ProductArrayType = await this.productService.findAllProduct();
+      const payload: ProductArrayType = await this.productService.findAllProduct({ keyword, name, desc, price, groupId, categoryId });
+      return requestOkResponse<ProductArrayType>(payload);
+    } catch (error) {
+      return requestErrorResponse(400, "get all product was failed")
+    }
+  }
+
+  @ApiOkResponse(ApiProductGetAllOkRespose)
+  @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
+  @Get('/group/:id')
+  async findAllProductByUser(
+    @Param('id') gid: string,
+  ): Promise<ProductArrayResponseType> {
+    try {
+      const payload: ProductArrayType = await this.productService.findAllProductByGroup(gid);
       return requestOkResponse<ProductArrayType>(payload);
     } catch (error) {
       return requestErrorResponse(400, "get all product was failed")
@@ -74,10 +143,42 @@ export class ProductController {
   @ApiOkResponse(ApiProductUpdateOkResponse)
   @ApiBadRequestResponse(ApiProductUpdateBadRequestResponse)
   @ApiParam(ApiProductParam)
-  @Patch(':id')
-  async updateProduct(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'images', maxCount: 10 },
+  ], {
+    storage: diskStorage({
+      destination: './public/uploaded/images/products',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        const extension = extname(file.originalname);
+        cb(null, `${randomName}${extension}`);
+      },
+    }),
+  }))
+  @Patch(':id/data')
+  async updateProduct(
+    @Param('id') id: string,
+    @Body() body,
+    @UploadedFiles() files,
+  ) {
     try {
-      const payload: number[] = await this.productService.updateProduct(id, updateProductDto);
+      const product: CreateProductDto = JSON.parse(body.product)
+     
+      const payload: number[] = await this.productService.updateProduct(id, product);
+      // console.log(files.images)
+      if (files) {
+        // ... Create a new product image for each uploaded file ...
+        for (const file of files.images) {
+          const {filename } = file;
+          await this.productService.createProductImage({
+            productId: id,
+            image: filename,
+          });
+        }
+      }
+      // console.log("product")
+      // console.log(id)
+    
       return requestOkResponse<number[]>(payload)
     } catch (error) {
       return requestErrorResponse(400, "update product was failed")
@@ -136,10 +237,14 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
   @ApiParam(ApiProductParam)
-  @Delete(':id')
-  async removeProductImage(@Param('id') id: string): Promise<DeleteProductImageResponseType> {
+  @Delete('/:productId/images/:id')
+  async removeProductImage(
+    @Param('id') id: string,
+    @Param('productId') productId: string
+  ): Promise<DeleteProductImageResponseType> {
     try {
-      const payload: number = await this.productService.removeProductImage(id);
+      const payload: number = await this.productService.removeProductImage(id, productId);
+
       return requestOkResponse<number>(payload);
     } catch (error) {
       return requestErrorResponse(400, "delete product image was failed")
