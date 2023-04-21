@@ -25,7 +25,7 @@ import { extname } from 'path';
 @ApiTags('Product')
 @Controller('products')
 export class ProductController {
- 
+
   constructor(
     private readonly productService: ProductService
   ) { }
@@ -62,8 +62,6 @@ export class ProductController {
       },
     }),
   }))
-
-
   @Post()
   async createProduct(
     @UploadedFiles() files,
@@ -74,9 +72,7 @@ export class ProductController {
 
       const payload: ProductEntity = await this.productService.createProduct(product);
       const productId = payload.id;
-      console.log("=====================")
-      console.log(productId)
-      console.log("=====================")
+
       // ... Create a new product image for each uploaded file ...
       for (const file of files.images) {
         const { originalname, size, filename } = file;
@@ -147,10 +143,42 @@ export class ProductController {
   @ApiOkResponse(ApiProductUpdateOkResponse)
   @ApiBadRequestResponse(ApiProductUpdateBadRequestResponse)
   @ApiParam(ApiProductParam)
-  @Patch(':id')
-  async updateProduct(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'images', maxCount: 10 },
+  ], {
+    storage: diskStorage({
+      destination: './public/uploaded/images/products',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
+        const extension = extname(file.originalname);
+        cb(null, `${randomName}${extension}`);
+      },
+    }),
+  }))
+  @Patch(':id/data')
+  async updateProduct(
+    @Param('id') id: string,
+    @Body() body,
+    @UploadedFiles() files,
+  ) {
     try {
-      const payload: number[] = await this.productService.updateProduct(id, updateProductDto);
+      const product: CreateProductDto = JSON.parse(body.product)
+     
+      const payload: number[] = await this.productService.updateProduct(id, product);
+      // console.log(files.images)
+      if (files) {
+        // ... Create a new product image for each uploaded file ...
+        for (const file of files.images) {
+          const {filename } = file;
+          await this.productService.createProductImage({
+            productId: id,
+            image: filename,
+          });
+        }
+      }
+      // console.log("product")
+      // console.log(id)
+    
       return requestOkResponse<number[]>(payload)
     } catch (error) {
       return requestErrorResponse(400, "update product was failed")
@@ -216,7 +244,7 @@ export class ProductController {
   ): Promise<DeleteProductImageResponseType> {
     try {
       const payload: number = await this.productService.removeProductImage(id, productId);
-      
+
       return requestOkResponse<number>(payload);
     } catch (error) {
       return requestErrorResponse(400, "delete product image was failed")

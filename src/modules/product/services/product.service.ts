@@ -154,6 +154,9 @@ export class ProductService {
 
   async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<number[]> {
     try {
+      console.log("\nupdateProductDto\n")
+      console.log(updateProductDto)
+      console.log("\nupdateProductDto")
       const product = await this.productRepo.update<ProductEntity>({ ...updateProductDto }, { where: { id } })
       return product
     } catch (error) {
@@ -171,6 +174,20 @@ export class ProductService {
 
   // ============================ Product Image ===================================
   async createProductImage(createProductImageDto: CreateProductImageDto): Promise<ProductImageEntity> {
+    try {
+      const productImageCount = await this.productImageRepo.findAndCountAll({
+        where: {
+          productId: createProductImageDto.productId
+        }
+      });
+
+      if (productImageCount.count > 10) throw new BadRequestException()
+      return await this.productImageRepo.create<ProductImageEntity>(createProductImageDto);
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+  async createUploadNewProductImage(createProductImageDto: CreateProductImageDto): Promise<ProductImageEntity> {
     try {
       const productImageCount = await this.productImageRepo.findAndCountAll();
       if (productImageCount.count > 10) throw new BadRequestException()
