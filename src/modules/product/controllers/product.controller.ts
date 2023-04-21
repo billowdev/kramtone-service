@@ -103,12 +103,12 @@ export class ProductController {
     @Query('name') name: string,
     @Query('desc') desc: string,
     @Query('price') price: string,
-    @Query('groupDataId') groupDataId: string,
+    @Query('groupDataId') groupId: string,
     @Query('categoryId') categoryId: string,
 
   ): Promise<ProductArrayResponseType> {
     try {
-      const payload: ProductArrayType = await this.productService.findAllProduct({ keyword, name, desc, price, groupDataId, categoryId });
+      const payload: ProductArrayType = await this.productService.findAllProduct({ keyword, name, desc, price, groupId, categoryId });
       return requestOkResponse<ProductArrayType>(payload);
     } catch (error) {
       return requestErrorResponse(400, "get all product was failed")

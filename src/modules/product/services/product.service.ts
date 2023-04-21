@@ -23,17 +23,18 @@ export class ProductService {
 
   async createProduct(createProductDto: any): Promise<ProductEntity> {
     try {
-      const response =  await this.productRepo.create<ProductEntity>(createProductDto);
-   
+      const response = await this.productRepo.create<ProductEntity>(createProductDto);
+
       return response
     } catch (error) {
       throw new BadRequestException()
     }
   }
-  async findAllProductByGroup(groupDataId: string): Promise<ProductEntity[]> {
+  async findAllProductByGroup(groupId: string): Promise<ProductEntity[]> {
     try {
+
       const products = await this.productRepo.findAll({
-        where: { groupDataId },
+        where: { groupId },
         include: [
           {
             model: CategoryEntity as null,
@@ -50,7 +51,7 @@ export class ProductService {
           {
             model: GroupDataEntity as null,
             attributes: {
-              exclude: [  'createdAt', 'updatedAt', 'verified']
+              exclude: ['createdAt', 'updatedAt', 'verified']
             }
           }
         ],
@@ -58,6 +59,7 @@ export class ProductService {
           exclude: ['groupDataId', 'categoryId']
         }
       });
+     
       return products;
     } catch (error) {
       throw new BadRequestException()

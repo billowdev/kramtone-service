@@ -18,6 +18,6 @@ export interface ProductQueryInterface extends Partial<ProductAttributes> {
 	name?: string,
 	desc?: string,
 	price?: string,
-	groupDataId?: string,
+	groupId?: string,
 	categoryId?: string,
 }
