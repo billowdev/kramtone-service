@@ -14,6 +14,7 @@ import { Op } from 'sequelize';
 import isAllValuesUndefined from 'src/common/utils/is-all-undefined';
 import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
 import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
+import { ColorSchemeEntity } from 'src/modules/color-scheme/entities/color-scheme.entity';
 
 @Injectable()
 export class ProductService {
@@ -135,6 +136,12 @@ export class ProductService {
             attributes: {
               exclude: ['productId', 'createdAt', 'updatedAt']
             }
+          },
+          {
+            model: ColorSchemeEntity as null,
+            // attributes: {
+            //   exclude: ['createdAt', 'updatedAt']
+            // }
           },
           {
             model: GroupDataEntity as null,

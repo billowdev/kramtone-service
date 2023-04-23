@@ -5,6 +5,7 @@ import { CategoryEntity } from "../../../modules/category/entities/category.enti
 import { ProductAttributes, ProductCreationAttributes } from "../types/product-entity.types";
 import { ProductImageEntity } from "./product-image.entity";
 import { GroupDataEntity } from './../../group-data/entities/group-data.entity';
+import { ColorSchemeEntity } from "src/modules/color-scheme/entities/color-scheme.entity";
 
 @Table({
 	tableName: 'product',
@@ -91,6 +92,21 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		allowNull: false
 	})
 	declare categoryId: string
+
+	@BelongsTo(()=> ColorSchemeEntity, {onDelete: 'casCade'})
+	colorscheme: ColorSchemeEntity
+	@ForeignKey(()=>ColorSchemeEntity)
+	@ApiProperty({
+		description: 'Foreign key as categoryId',
+		example: "51b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
+	})
+	@Column({
+		type: DataType.STRING,
+		field: "colorscheme_id",
+		unique: false,
+		allowNull: false
+	})
+	declare colorSchemeId: string
 
 	@ApiProperty({
 		description: 'When product was created',

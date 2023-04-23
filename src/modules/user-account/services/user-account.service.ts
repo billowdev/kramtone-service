@@ -164,7 +164,8 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<number[]> {
     try {
-      return await this.userRepo.update<UserEntity>(
+      console.log(updateUserDto)
+      const response =  await this.userRepo.update<UserEntity>(
         {
           ...updateUserDto
         },
@@ -172,6 +173,8 @@ export class UserService {
           where: { id }
         }
       )
+      console.log(response)
+      return response
     } catch (error) {
       throw new BadRequestException()
     }
