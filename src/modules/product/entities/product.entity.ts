@@ -102,7 +102,7 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	})
 	@Column({
 		type: DataType.STRING,
-		field: "colorscheme_id",
+		field: "color_scheme_id",
 		unique: false,
 		allowNull: false
 	})
