@@ -89,8 +89,6 @@ export class ProductController {
     }
   }
 
-
-
   @ApiOkResponse(ApiProductGetAllOkRespose)
   @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
   @Get()
@@ -137,6 +135,17 @@ export class ProductController {
       return requestErrorResponse(400, "get one product was failed")
     }
   }
+
+  @Get('view/:id')
+  async view(@Param('id') id: string): Promise<any> {
+    try {
+      const payload: any = await this.productService.increaseReloadCount(id);
+      return requestOkResponse<any>(payload)
+    } catch (error) {
+      return requestErrorResponse(400, "get one product was failed")
+    }
+  }
+
 
   @UseGuards(JwtAuthGuard)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)

@@ -55,6 +55,12 @@ export class ProductService {
             attributes: {
               exclude: ['createdAt', 'updatedAt', 'verified']
             }
+          },
+          {
+            model: ColorSchemeEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt']
+            }
           }
         ],
         attributes: {
@@ -68,9 +74,56 @@ export class ProductService {
     }
   }
 
+  async increaseReloadCount(id: string): Promise<any> {
+    try {
+      const prev = await this.productRepo.findOne({
+        where: { id },
+        raw: true
+      });
+      const reloadCount = prev.reloadCount + 1;
+      const response = await this.productRepo.update({
+        reloadCount
+      }, {
+        where: { id }
+      })
+      return response
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
   async findAllProduct(q: ProductQueryInterface): Promise<ProductEntity[]> {
     try {
-      const products = await this.productRepo.findAll();
+      const products = await this.productRepo.findAll({
+        include: [
+          {
+            model: CategoryEntity as null,
+            attributes: {
+              exclude: ['image', 'desc', 'createdAt', 'updatedAt', 'isDefault', 'groupId']
+            }
+          },
+          {
+            model: ProductImageEntity as null,
+            attributes: {
+              exclude: ['productId', 'createdAt', 'updatedAt']
+            }
+          },
+          {
+            model: GroupDataEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt', 'verified']
+            }
+          },
+          {
+            model: ColorSchemeEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt']
+            }
+          }
+        ],
+      });
+      console.log("------------------------")
+      console.log(products)
       return products;
     } catch (error) {
       console.log(error)

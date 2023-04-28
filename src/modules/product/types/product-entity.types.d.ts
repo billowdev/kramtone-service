@@ -5,6 +5,7 @@ export type ProductAttributes = {
 	declare name: string;
 	declare desc: string;
 	declare price: number;
+	declare reloadCount: number;
 	declare groupId: string;
 	declare categoryId: number;
 	declare createdAt: Date;

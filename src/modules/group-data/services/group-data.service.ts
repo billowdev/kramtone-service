@@ -10,6 +10,9 @@ import { Role } from '../../user-account/types/role.enum';
 import { UserService } from './../../user-account/services/user-account.service';
 import removeNullProperties from "../../../common/utils/removeNullProperties";
 import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
+import { ProductEntity } from 'src/modules/product/entities/product.entity';
+import { ColorSchemeEntity } from 'src/modules/color-scheme/entities/color-scheme.entity';
+import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 
 @Injectable()
 export class GroupDataService {
@@ -35,10 +38,30 @@ export class GroupDataService {
           verified: true
         },
         attributes: {
-          exclude: ['verified']
+          exclude: ['verified'],
         },
+        include: [{
+          model: ProductEntity,
+          attributes: {
+            exclude: ['groupId'] // Exclude the foreign key
+          }
+        },
+        {
+          model: CategoryEntity,
+          attributes: {
+            exclude: ['groupId'] // Exclude the foreign key
+          }
+        },
+        {
+          model: ColorSchemeEntity,
+          attributes: {
+            exclude: ['groupId'] // Exclude the foreign key
+          }
+        }
+      ]
       });
     } catch (error) {
+      console.error(error)
       throw new BadRequestException()
     }
   }
@@ -161,7 +184,17 @@ export class GroupDataService {
         }
       }
 
-        if (user.role === Role.ADMIN) {
+      if (user.role === Role.ADMIN) {
+        return await this.groupRepo.update<GroupDataEntity>({
+          ...newUpdate
+        },
+          {
+            where: { id }
+          }
+        )
+      } else {
+
+        if (user.gid === id) {
           return await this.groupRepo.update<GroupDataEntity>({
             ...newUpdate
           },
@@ -170,32 +203,22 @@ export class GroupDataService {
             }
           )
         } else {
-
-          if (user.gid === id) {
-            return await this.groupRepo.update<GroupDataEntity>({
-              ...newUpdate
-            },
-              {
-                where: { id }
-              }
-            )
-          } else {
-            return [403]
-          }
+          return [403]
         }
-
-      } catch (error) {
-        throw new BadRequestException()
       }
-    }
 
-  async remove(id: string): Promise < number > {
-      try {
-        return await this.groupRepo.destroy({
-          where: { id }
-        })
-      } catch(error) {
-        throw new BadRequestException();
-      }
+    } catch (error) {
+      throw new BadRequestException()
     }
   }
+
+  async remove(id: string): Promise<number> {
+    try {
+      return await this.groupRepo.destroy({
+        where: { id }
+      })
+    } catch (error) {
+      throw new BadRequestException();
+    }
+  }
+}

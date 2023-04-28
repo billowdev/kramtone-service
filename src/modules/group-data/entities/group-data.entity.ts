@@ -8,6 +8,7 @@ import { GroupDataAttributes, GroupDataCreationAttributes } from "../types/group
 import { ColorSchemeEntity } from './../../color-scheme/entities/color-scheme.entity';
 import { GroupColorSchemeEntity } from "../../color-scheme/entities/group-color-scheme.entity";
 import { CategoryEntity } from './../../category/entities/category.entity';
+import { ProductEntity } from "src/modules/product/entities/product.entity";
 
 @Table({
 	tableName: 'group_data',
@@ -110,11 +111,11 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 		example: 'billowdev@gmail.com',
 		nullable: false,
 		maxLength: 120,
-		uniqueItems: true
+		uniqueItems: false
 	})
 	@Column({
 		type: DataType.STRING(120),
-		unique: true,
+		unique: false,
 		allowNull: false,
 	})
 	declare email: string;
@@ -300,6 +301,9 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 
 	@HasMany(() => CategoryEntity)
 	categories: CategoryEntity[]
+
+	@HasMany(() => ProductEntity)
+	products: ProductEntity[]
 
 	@BelongsToMany(() => ColorSchemeEntity, () => GroupColorSchemeEntity)
 	colorSchemes: ColorSchemeEntity[];

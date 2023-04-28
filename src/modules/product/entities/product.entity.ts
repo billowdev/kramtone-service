@@ -62,6 +62,16 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	})
 	declare price: number;
 
+	@ApiProperty({
+		description: 'The Product reloadCount',
+		example: 1,
+	})
+	@Column({
+		type: DataType.INTEGER,
+		field: "reload_count",
+	})
+	declare reloadCount: number;
+
 	@BelongsTo(() => GroupDataEntity, { onDelete: 'casCade' })
 	groupData: GroupDataEntity
 	@ForeignKey(() => GroupDataEntity)
@@ -94,7 +104,7 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	declare categoryId: string
 
 	@BelongsTo(()=> ColorSchemeEntity, {onDelete: 'casCade'})
-	colorscheme: ColorSchemeEntity
+	colorScheme: ColorSchemeEntity
 	@ForeignKey(()=>ColorSchemeEntity)
 	@ApiProperty({
 		description: 'Foreign key as categoryId',
