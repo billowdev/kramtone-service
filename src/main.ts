@@ -16,20 +16,25 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(prefix, app, document);
 
-  const corsWhitelist = [
-    CLIENT_URL_DEV,
-    CLIENT_URL_PROD
-  ]
+  // const corsWhitelist = [
+  //   CLIENT_URL_DEV,
+  //   CLIENT_URL_PROD
+  // ]
+  // app.enableCors({
+  //   credentials: true,
+  //   origin: function (origin, callback) {
+  //     if (!origin || corsWhitelist.indexOf(origin) !== -1) {
+  //       callback(null, true)
+  //     } else {
+  //       callback(new Error('Not allowed by CORS'))
+  //     }
+  //   }
+  // })
   app.enableCors({
     credentials: true,
-    origin: function (origin, callback) {
-      if (!origin || corsWhitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    }
-  })
+    origin: '*'
+  });
+  
 
   // Use helmet to secure the app with various HTTP headers
   // app.use(helmet());
