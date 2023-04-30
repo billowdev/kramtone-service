@@ -31,40 +31,72 @@ export class GroupDataService {
     }
   }
 
-  async findAll(): Promise<GroupDataArrayType> {
+  async findAll(query: {
+    categoryId?: string;
+    colorSchemeId?: string;
+  }): Promise<GroupDataArrayType> {
     try {
-      return await this.groupRepo.findAll<GroupDataEntity>({
-        where: {
-          verified: true
-        },
-        attributes: {
-          exclude: ['verified'],
-        },
-        include: [{
+      let where: { [key: string]: any } = { verified: true };
+      const attributes: { exclude: string[] } = { exclude: ['verified'] };
+      const include = [
+        {
           model: ProductEntity,
           attributes: {
-            exclude: ['groupId'] // Exclude the foreign key
-          }
+            exclude: ['groupId'],
+          },
+          include: [
+            {
+              model: CategoryEntity,
+              attributes: {
+                exclude: ['groupId'],
+              },
+              where: query.categoryId ? { id: query.categoryId } : {},
+            },
+            {
+              model: ColorSchemeEntity,
+              attributes: {
+                exclude: ['groupId'],
+              },
+              where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
+            },
+          ],
         },
-        {
-          model: CategoryEntity,
-          attributes: {
-            exclude: ['groupId'] // Exclude the foreign key
-          }
-        },
-        {
-          model: ColorSchemeEntity,
-          attributes: {
-            exclude: ['groupId'] // Exclude the foreign key
-          }
-        }
-      ]
+      ];
+
+      if (!query.categoryId && !query.colorSchemeId) {
+        where = {}; // if no filter data is provided, return all groups
+      }
+
+      const groups = await this.groupRepo.findAll<GroupDataEntity>({
+        where,
+        attributes,
+        include,
       });
+
+      // Filter out groups that have no matching products
+      const filteredGroups = groups.filter((group) => {
+        return group.products.some((product) => {
+          if (query.categoryId && product.category.id !== query.categoryId) {
+            return false;
+          }
+          if (query.colorSchemeId && product.colorScheme.id !== query.colorSchemeId) {
+            return false;
+          }
+          return true;
+        });
+      });
+
+      return filteredGroups;
     } catch (error) {
-      console.error(error)
-      throw new BadRequestException()
+      console.error(error);
+      throw new BadRequestException();
     }
   }
+
+
+
+  
+  
 
   async adminFindAll(keyword?: string, page?: number, pageSize?: number): Promise<GroupDataArrayType> {
     try {
