@@ -61,7 +61,7 @@ export class UserEntity extends Model<UserAttributes, UserCreationAttributes> {
 	@Column({
 		type: DataType.STRING(120),
 		unique: true,
-		allowNull: false,
+		allowNull: true,
 	})
 	declare email: string;
 

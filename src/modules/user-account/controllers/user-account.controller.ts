@@ -16,6 +16,7 @@ import { CreateUserResponseType } from '../types/user-account.types';
 import { requestFailResponse } from '../../../common/utils/generate-response.util';
 import { UserEntity } from '../entities/user-account.entity';
 import { TokenDto } from '../dto/token.dto';
+import { AdminCreateUserDto } from '../dto/admin-create-user';
 
 @ApiTags('Users')
 @Controller('users')
@@ -60,29 +61,32 @@ export class UserController {
 	@Post('signup')
 	async signup(@Body() dto: SignUpDto): Promise<RequestResponseType<SignDto>> {
 		try {
+		
 			const payload: SignDto = await this.userService.signup(dto);
 			return requestOkResponse<SignDto>(payload)
 		} catch (error) {
+			console.log(error)
 			return requestErrorResponse(400, "signup failed")
 		}
 	}
 
 	@Roles(Role.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Post()
+	@Post('create')
 	@ApiBody(ApiUserBody)
 	@ApiOkResponse(ApiUserCreatedOkResponse)
 	@ApiBadRequestResponse(ApiUserCreatedBadRequestResponse)
-	async create(@Body() createUserDto: CreateUserDto): Promise<CreateUserResponseType> {
+	async create(@Body() createUserDto: AdminCreateUserDto): Promise<CreateUserResponseType> {
 		let response: CreateUserResponseType
 		try {
-			const payload: UserEntity = await this.userService.create(createUserDto);
+			const payload: UserEntity = await this.userService.adminCreate(createUserDto);
 			if (payload) {
 				response = requestOkResponse(payload)
 			} else {
 				return requestFailResponse(400, "create user was failed")
 			}
 		} catch (error) {
+			console.log(error)
 			return requestErrorResponse(400, "create user was error");
 		}
 		return response
@@ -94,11 +98,13 @@ export class UserController {
 	@ApiOkResponse(ApiUserGetAllOkResponse)
 	@ApiBadRequestResponse(ApiUserGetAllBadRequestResponse)
 	@Get('/get')
-	findAll(
+	async findAll(
 		@Query() queryParams: string,
 	) {
 		// queryParams['keyword'], queryParams['page'], queryParams['pageSize']
-		return this.userService.findAll(queryParams['keyword'], queryParams['page'], queryParams['pageSize']);
+		const response =  await this.userService.findAll(queryParams['keyword'], queryParams['page'], queryParams['pageSize']);
+		// console.log(response)
+		return requestOkResponse(response)
 	}
 
 	@Roles(Role.ADMIN)
@@ -126,10 +132,33 @@ export class UserController {
 	@Roles(Role.MEMBER, Role.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Patch(':id')
-	async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-		// console.log(updateUserDto)
-		const payload = await this.userService.update(id, updateUserDto);
-		return requestOkResponse<number[]>(payload)
+	async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Request() req: RequestWithAuth) {
+		try {
+			
+			if(req.user.role === Role.ADMIN) {
+				// console.log("========== status ============= ")
+				// console.log(updateUserDto)
+				const payload = await this.userService.update(id, updateUserDto);
+				return requestOkResponse<number[]>(payload)
+			}else{
+				if(updateUserDto.activated){
+					delete updateUserDto.activated
+				}
+				if(updateUserDto.removed){
+					delete updateUserDto.removed
+				}
+				if(updateUserDto.role){
+					delete updateUserDto.role
+				}
+				const payload = await this.userService.update(id, updateUserDto);
+				return requestOkResponse<number[]>(payload)
+
+			}
+			// console.log(updateUserDto)
+		} catch (error) {
+			// console.log(error)
+			return requestErrorResponse(400, error)
+		}
 	}
 
 	@Delete(':id')

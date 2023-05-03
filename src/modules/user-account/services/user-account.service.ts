@@ -14,6 +14,7 @@ import { GroupDataService } from './../../group-data/services/group-data.service
 import { LoginDto } from './../dto/login.dto';
 import { Op } from 'sequelize';
 import { GroupTypeEnum } from '../../group-data/types/group-data.types.enum';
+import { AdminCreateUserDto } from '../dto/admin-create-user';
 
 
 @Injectable()
@@ -80,7 +81,7 @@ export class UserService {
   public async refreshToken(auth: TokenDto): Promise<TokenDto> {
     try {
       const { sub, role, activated, gid } = auth
-      const refreshToken: string = await this.generateToken({ sub, role, activated, gid});
+      const refreshToken: string = await this.generateToken({ sub, role, activated, gid });
       const payload: TokenDto = {
         sub, role, refreshToken, activated, gid
       }
@@ -95,6 +96,7 @@ export class UserService {
     try {
       return await this.userRepo.create<UserEntity>(createUserDto)
     } catch (error) {
+      console.log(error)
       throw new BadRequestException()
     }
   }
@@ -120,12 +122,14 @@ export class UserService {
               },
               {
                 phone: { [Op.iLike]: `%${keyword}%` },
-              }
-            ]
+              },
+            ],
+            removed: false
           },
           attributes: {
             exclude: ['hashPassword']
-          }
+          },
+          order: [['updatedAt', 'DESC'], ['createdAt', 'DESC']]
         });
       } else if (page && pageSize) {
         return await this.userRepo.findAll<UserEntity>({
@@ -133,14 +137,23 @@ export class UserService {
           limit: pageSize,
           attributes: {
             exclude: ['hashPassword']
-          }
+          },
+          where: {
+            removed: false
+          },
+          order: [['updatedAt', 'DESC'], ['createdAt', 'DESC']]
+
         });
       }
       else {
         return await this.userRepo.findAll<UserEntity>({
           attributes: {
             exclude: ['hashPassword']
-          }
+          },
+          where: {
+            removed: false
+          },
+          order: [['updatedAt', 'DESC'], ['createdAt', 'DESC']]
         });
       }
     } catch (error) {
@@ -164,8 +177,11 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<number[]> {
     try {
-      console.log(updateUserDto)
-      const response =  await this.userRepo.update<UserEntity>(
+      // console.log("================")
+      // console.log(id)
+      // console.log(updateUserDto)
+      // console.log("================")
+      const response = await this.userRepo.update<UserEntity>(
         {
           ...updateUserDto
         },
@@ -173,19 +189,25 @@ export class UserService {
           where: { id }
         }
       )
-      console.log(response)
+      // console.log(response)
       return response
     } catch (error) {
-      throw new BadRequestException()
+      // console.error(error['name'])
+      if (error['name'] === 'SequelizeUniqueConstraintError') {
+        throw new BadRequestException('ข้อมูลผู้ใช้ซ้ำ')
+      } else {
+        throw new BadRequestException('เกิดข้อผิดพลาดขณะอัปเดตข้อมูลผู้ใช้')
+      }
+
+
     }
   }
 
   async remove(id: string) {
     try {
-      return await this.userRepo.destroy({
+      return await this.userRepo.update({ removed: true }, {
         where: { id }
       })
-
     } catch (error) {
       throw new BadRequestException()
     }
@@ -197,9 +219,9 @@ export class UserService {
     try {
       // find user id and role from auth
       const user: UserEntity = await this.findOneByUsername(body.username)
-      const { id, role, activated, groupId} = user
+      const { id, role, activated, groupId } = user
       delete user.hashPassword
-      const payload = { sub: id, role, activated, gid: groupId}
+      const payload = { sub: id, role, activated, gid: groupId }
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
       const encrypt: string = encryptAES(SignData);
@@ -239,5 +261,48 @@ export class UserService {
       throw new BadRequestException()
     }
   }
+
+    // signup : register service
+    public async adminCreate(userSignUp: AdminCreateUserDto): Promise<any> {
+      try {
+        const groupData = await this.groupDataService.create({
+          groupName: "",
+          groupType: GroupTypeEnum.PRODUCER,
+          agency: "",
+          phone: "",
+          email: "",
+          logo: "",
+          banner: "",
+          hno: "",
+          village: "",
+          lane: "",
+          road: "",
+          subdistrict: "",
+          district: "",
+          province: "",
+          zipCode: "",
+          lat: "",
+          lng: "",
+          verified: false
+      })
+        const hashPassword = await this.hashPassword(userSignUp.password);
+        const createUser = await this.create({ ...userSignUp, hashPassword, groupId: groupData['dataValues']['id'] });
+
+        delete createUser['dataValues'].hashPassword
+        const payload = {
+          sub: createUser['dataValues'].id,
+          role: createUser['dataValues'].role,
+          activated: createUser['dataValues'].activated,
+          gid: createUser['dataValues'].groupId
+        }
+        const token = await this.generateToken(payload);
+        return { user: createUser, token };
+      } catch (error) {
+        // console.log("========= admin create failed ============")
+        // console.error(error)
+        // console.log("========= admin create failed ============")
+        throw new BadRequestException()
+      }
+    }
 
 }

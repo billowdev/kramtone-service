@@ -199,12 +199,14 @@ export class ProductController {
   @ApiOkResponse(ApiProductDeleteOkResponse)
   @ApiBadRequestResponse(ApiProductDeleteBadRequestResponse)
   @ApiParam(ApiProductParam)
-  @Delete(':id')
+  @Delete('delete-product/:id')
   async removeProduct(@Param('id') id: string) {
     try {
+      
       const payload: number = await this.productService.removeProduct(id);
       return requestOkResponse<number>(payload);
     } catch (error) {
+      console.error(error)
       return requestErrorResponse(400, "delete product was failed")
     }
   }

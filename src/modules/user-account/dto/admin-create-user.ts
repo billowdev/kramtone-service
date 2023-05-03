@@ -1,14 +1,14 @@
 import { Role } from "../types/role.enum";
 import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateUserDto {
+export class AdminCreateUserDto {
 	@IsNotEmpty()
 	@IsString()
 	username: string;
 
 	@IsNotEmpty()
 	@IsString()
-	hashPassword: string;
+	password: string;
 
 	@IsBoolean()
 	@IsOptional()

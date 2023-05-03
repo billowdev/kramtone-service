@@ -31,8 +31,8 @@ export class SignUpDto {
 	phone?: string;
 
 	@IsEmail()
-	@IsNotEmpty()
-	email: string;
+	@IsOptional()
+	email?: string;
 
 	@IsBoolean()
 	@IsOptional()

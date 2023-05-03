@@ -7,6 +7,17 @@ export class UpdateUserDto {
 	@IsString()
 	username: string;
 
+	@IsBoolean()
+	@IsOptional()
+	activated?: boolean;
+
+	@IsBoolean()
+	@IsOptional()
+	removed?: boolean;
+
+	@IsString()
+	@IsOptional()
+	role?: string;
 
 	@IsString()
 	@IsOptional()

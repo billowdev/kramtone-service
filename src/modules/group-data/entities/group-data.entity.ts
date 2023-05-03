@@ -32,12 +32,12 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	@ApiProperty({
 		description: 'group name',
 		example: 'group name',
-		nullable: false,
+		nullable: true,
 		maxLength: 100
 	})
 	@Column({
 		type: DataType.STRING(100),
-		allowNull: false,
+		allowNull: true,
 		field: 'group_name'
 	})
 	declare groupName: string;
@@ -60,12 +60,12 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	@ApiProperty({
 		description: 'group name',
 		example: 'group name',
-		nullable: false,
+		nullable: true,
 		maxLength: 160
 	})
 	@Column({
 		type: DataType.STRING(160),
-		allowNull: false,
+		allowNull: true,
 		field: 'agency'
 	})
 	declare agency: string;
@@ -109,14 +109,14 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	@ApiProperty({
 		description: 'The email of user',
 		example: 'billowdev@gmail.com',
-		nullable: false,
+		nullable: true,
 		maxLength: 120,
 		uniqueItems: false
 	})
 	@Column({
 		type: DataType.STRING(120),
 		unique: false,
-		allowNull: false,
+		allowNull: true,
 	})
 	declare email: string;
 
@@ -152,12 +152,12 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 		description: 'The house number',
 		example: '9',
 		maxLength: 5,
-		nullable: false
+		nullable: true
 	})
 	@Column({
 		type: DataType.STRING(10),
 		field: 'hno',
-		allowNull: false,
+		allowNull: true,
 	})
 	declare hno: string
 
@@ -165,11 +165,11 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 		description: 'The village name',
 		example: 'บ้านมะขามป้อม',
 		maxLength: 50,
-		nullable: false
+		nullable: true
 	})
 	@Column({
 		type: DataType.STRING(50),
-		allowNull: false
+		allowNull: true
 	})
 	declare village: string
 
@@ -201,12 +201,12 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 		description: 'Sub-District name',
 		example: 'ตำบลมะขามป้อม',
 		maxLength: 50,
-		nullable: false
+		nullable: true
 	})
 	@Column({
 		type: DataType.STRING(50),
 		field: 'subdistrict',
-		allowNull: false
+		allowNull: true
 	})
 	declare subdistrict: string
 
@@ -214,11 +214,11 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 		description: 'District name',
 		example: 'อำเภอมะขามป้อม',
 		maxLength: 50,
-		nullable: false
+		nullable: true
 	})
 	@Column({
 		type: DataType.STRING(50),
-		allowNull: false
+		allowNull: true
 	})
 	declare district: string
 
@@ -226,11 +226,11 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 		description: 'Province name',
 		example: 'จังหวัดมะขามป้อม',
 		maxLength: 50,
-		nullable: false
+		nullable: true
 	})
 	@Column({
 		type: DataType.STRING(50),
-		allowNull: false
+		allowNull: true
 	})
 	declare province: string
 

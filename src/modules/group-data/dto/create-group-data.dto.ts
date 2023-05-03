@@ -32,7 +32,46 @@ export class CreateGroupDto {
 
 	@IsString()
 	@IsOptional()
-	addressId?: string;
+	hno?: string
+
+
+	@IsString()
+	@IsOptional()
+	village?: string
+
+
+	@IsString()
+	@IsOptional()
+	lane?: string
+
+	@IsString()
+	@IsOptional()
+	road?: string
+
+	@IsString()
+	@IsOptional()
+	subdistrict?: string
+
+	@IsString()
+	@IsOptional()
+	district?: string
+
+	@IsString()
+	@IsOptional()
+	province?: string
+
+	@IsString()
+	@IsOptional()
+	zipCode?: string
+
+	@IsString()
+	@IsOptional()
+	lat?: string
+
+	@IsString()
+	@IsOptional()
+	lng?: string
+
 
 	@IsBoolean()
 	@IsOptional()

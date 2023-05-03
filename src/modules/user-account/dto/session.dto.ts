@@ -17,6 +17,12 @@ export class SessionDto {
 	@IsNotEmpty()
 	role: string;
 
+	
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
+	activated: boolean;
+
 	@ApiProperty()
 	@IsNumber()
 	@IsNotEmpty()

@@ -93,11 +93,6 @@ export class GroupDataService {
     }
   }
 
-
-
-  
-  
-
   async adminFindAll(keyword?: string, page?: number, pageSize?: number): Promise<GroupDataArrayType> {
     try {
       const offset = (page - 1) * pageSize;
