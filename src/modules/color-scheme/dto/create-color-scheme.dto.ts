@@ -8,26 +8,14 @@ export class CreateColorSchemeDto {
 
 	@IsString()
 	@IsNotEmpty()
-	readonly cname: string;
+	readonly nameTH: string;
 
 	@IsString()
 	@IsNotEmpty()
-	readonly cnameth: string;
+	readonly nameEN: string;
 
 	@IsString()
 	@IsNotEmpty()
 	readonly hex: string;
-
-	@IsString()
-	@IsNotEmpty()
-	readonly red: string;
-
-	@IsString()
-	@IsNotEmpty()
-	readonly green: string;
-
-	@IsString()
-	@IsNotEmpty()
-	readonly blue: string;
 }
 export type BulkCreateColorSchemeDto = CreateColorSchemeDto[]
