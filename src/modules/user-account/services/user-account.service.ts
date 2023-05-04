@@ -15,6 +15,7 @@ import { LoginDto } from './../dto/login.dto';
 import { Op } from 'sequelize';
 import { GroupTypeEnum } from '../../group-data/types/group-data.types.enum';
 import { AdminCreateUserDto } from '../dto/admin-create-user';
+import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
 
 
 @Injectable()
@@ -126,6 +127,14 @@ export class UserService {
             ],
             removed: false
           },
+          include: [
+            {
+              model: GroupDataEntity as null,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt', 'verified']
+              }
+            },
+          ],
           attributes: {
             exclude: ['hashPassword']
           },
@@ -138,6 +147,14 @@ export class UserService {
           attributes: {
             exclude: ['hashPassword']
           },
+          include: [
+            {
+              model: GroupDataEntity as null,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt', 'verified']
+              }
+            },
+          ],
           where: {
             removed: false
           },
@@ -150,6 +167,14 @@ export class UserService {
           attributes: {
             exclude: ['hashPassword']
           },
+          include: [
+            {
+              model: GroupDataEntity as null,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt', 'verified']
+              }
+            },
+          ],
           where: {
             removed: false
           },

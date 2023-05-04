@@ -36,21 +36,26 @@ export class GroupDataController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Get('/admin/get')
+  // async adminFindAll(@Query() queryParams) {
+  //   const { keywords, page, } = queryParams
+  //   return this.groupDataService.adminFindAll(keywords);
+  // }
   @Get('/admin/get')
-  async adminFindAll(@Query() queryParams) {
-    const { keywords, page, pageSize } = queryParams
-    return this.groupDataService.adminFindAll(keywords, page, pageSize);
+  async adminFindAll(@Query('categoryId') categoryId?: any, @Query('colorSchemeId') colorSchemeId?: any): Promise<GetAllGroupDataResponseType> {
+    try {
+      const payload: GroupDataArrayType = await this.groupDataService.adminFindAll({ categoryId, colorSchemeId });
+      return requestOkResponse<GroupDataArrayType>(payload);
+    } catch (error) {
+      return requestFailResponse(400, 'get all group was failed');
+    }
   }
 
   @Get('/get')
   async findAll(@Query('categoryId') categoryId?: any, @Query('colorSchemeId') colorSchemeId?: any): Promise<GetAllGroupDataResponseType> {
     try {
-      // console.log("=================================")
-      // console.log(categoryId)
-      // console.log(colorSchemeId)
-      // console.log("=================================")
       const payload: GroupDataArrayType = await this.groupDataService.findAll({ categoryId, colorSchemeId });
       return requestOkResponse<GroupDataArrayType>(payload);
     } catch (error) {

@@ -37,7 +37,7 @@ export class GroupDataService {
   }): Promise<GroupDataArrayType> {
     try {
       let where: { [key: string]: any } = { verified: true };
-      const attributes: { exclude: string[] } = { exclude: ['verified'] };
+      const attributes: { exclude: string[] } = { exclude: [] };
       const include = [
         {
           model: ProductEntity,
@@ -93,79 +93,65 @@ export class GroupDataService {
     }
   }
 
-  async adminFindAll(keyword?: string, page?: number, pageSize?: number): Promise<GroupDataArrayType> {
+  async adminFindAll(query: {
+    categoryId?: string;
+    colorSchemeId?: string;
+  }): Promise<GroupDataArrayType> {
     try {
-      const offset = (page - 1) * pageSize;
-      if (keyword) {
-        return await this.groupRepo.findAll<GroupDataEntity>({
-          where: {
-            [Op.or]: [
-              {
-                groupName: { [Op.iLike]: `%${keyword}%` }
-              },
-              {
-                agency: { [Op.iLike]: `%${keyword}%` }
-              },
-              {
-                groupType: { [Op.eq]: keyword }
-              },
-              {
-                phone: { [Op.iLike]: `%${keyword}%` }
-              },
-              {
-                email: { [Op.iLike]: `%${keyword}%` }
-              },
-            ],
-          },
+      let where: { [key: string]: any } = { };
+      const attributes: { exclude: string[] } = { exclude: [] };
+      const include = [
+        {
+          model: ProductEntity,
           attributes: {
-            exclude: ['addressId']
+            exclude: ['groupId'],
           },
           include: [
             {
-              model: UserEntity,
-              where: {
-                remove: false
-              },
+              model: CategoryEntity,
               attributes: {
-                exclude: ['hashPassword', 'role', 'remove']
-              }
-            }
-          ]
-        });
-      } else if (page && pageSize) {
-        return await this.groupRepo.findAll<GroupDataEntity>({
-          offset,
-          limit: pageSize,
-          include: [
+                exclude: ['groupId'],
+              },
+              where: query.categoryId ? { id: query.categoryId } : {},
+            },
             {
-              model: UserEntity,
-              where: {
-                remove: false
-              },
+              model: ColorSchemeEntity,
               attributes: {
-                exclude: ['hashPassword', 'role', 'remove']
-              }
-            }
-          ]
-        });
-      } else {
-        return await this.groupRepo.findAll<GroupDataEntity>({
-          include: [
-            {
-              model: UserEntity,
-              where: {
-                remove: false
+                exclude: ['groupId'],
               },
-              attributes: {
-                exclude: ['hashPassword', 'role', 'remove']
-              }
-            }
-          ]
+              where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
+            },
+          ],
+        },
+      ];
 
-        });
+      if (!query.categoryId && !query.colorSchemeId) {
+        where = {}; // if no filter data is provided, return all groups
       }
+
+      const groups = await this.groupRepo.findAll<GroupDataEntity>({
+        where,
+        attributes,
+        include,
+      });
+
+      // Filter out groups that have no matching products
+      const filteredGroups = groups.filter((group) => {
+        return group.products.some((product) => {
+          if (query.categoryId && product.category.id !== query.categoryId) {
+            return false;
+          }
+          if (query.colorSchemeId && product.colorScheme.id !== query.colorSchemeId) {
+            return false;
+          }
+          return true;
+        });
+      });
+
+      return filteredGroups;
     } catch (error) {
-      throw new BadRequestException()
+      console.error(error);
+      throw new BadRequestException();
     }
   }
 
