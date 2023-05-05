@@ -36,6 +36,48 @@ export class ProductService {
     try {
 
       const products = await this.productRepo.findAll({
+        where: { groupId, publish:true },
+        include: [
+          {
+            model: CategoryEntity as null,
+            attributes: {
+              exclude: ['image', 'desc', 'createdAt', 'updatedAt', 'isDefault', 'groupId']
+            }
+          },
+          {
+            model: ProductImageEntity as null,
+            attributes: {
+              exclude: ['productId', 'createdAt', 'updatedAt']
+            }
+          },
+          {
+            model: GroupDataEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt', 'verified']
+            }
+          },
+          {
+            model: ColorSchemeEntity as null,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt']
+            }
+          }
+        ],
+        attributes: {
+          exclude: ['groupDataId', 'categoryId']
+        }
+      });
+
+      return products;
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async findAllProductByGroupForManage(groupId: string): Promise<ProductEntity[]> {
+    try {
+
+      const products = await this.productRepo.findAll({
         where: { groupId },
         include: [
           {
@@ -73,6 +115,7 @@ export class ProductService {
       throw new BadRequestException()
     }
   }
+
 
   async increaseReloadCount(id: string): Promise<any> {
     try {
@@ -119,8 +162,11 @@ export class ProductService {
             attributes: {
               exclude: ['createdAt', 'updatedAt']
             }
-          }
+          },
         ],
+        where:{
+          publish:true,
+        }
       });
       console.log("------------------------")
       console.log(products)

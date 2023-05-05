@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus, ParseIntPipe, Req, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus, ParseIntPipe, Req, UploadedFiles, Request } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiConsumes, ApiForbiddenResponse, ApiOkResponse, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -20,6 +20,7 @@ import { CateogoryArrayResponseType, CateogoryArrayType, CreateCategoryResponseT
 import { UserIsActivateAuthGuard } from './../../../common/guards/user-is-activate.guard';
 import { SessionDto } from 'src/modules/user-account/dto/session.dto';
 import { GetSession } from 'src/common/decorators/auth.decorator';
+import { RequestWithAuth } from 'src/modules/user-account/dto/login.dto';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -50,8 +51,8 @@ export class CategoryController {
     @Body('desc') desc: string,
     @UploadedFile() file?: Express.Multer.File,
     // @Body() createCategoryDto: CreateCategoryDto
-    ): Promise<CreateCategoryResponseType> {
-      try {
+  ): Promise<CreateCategoryResponseType> {
+    try {
       const createCategoryDto = file ? {
         name, desc,
         image: file.filename
@@ -161,7 +162,7 @@ export class CategoryController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      if(file){
+      if (file) {
         const category: CategoryEntity = await this.categoryService.findOne(id);
         const oldImage: string = category.image;
         const imageFromReq: string = file.filename;
@@ -171,14 +172,14 @@ export class CategoryController {
           (oldImage !== imageFromReq)) {
           removeExistImage(oldImage, 'categories')
         }
-  
+
       }
 
       const updateCategoryDto = file ? {
         name, desc,
         image: file.filename
       } : { name, desc };
-      
+
       const payload: number[] = await this.categoryService.update(id, updateCategoryDto);
       return requestOkResponse<number[]>(payload)
     } catch (error) {
@@ -198,12 +199,18 @@ export class CategoryController {
   @HttpCode(HttpStatus.FORBIDDEN)
   @HttpCode(HttpStatus.UNAUTHORIZED)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Request() req: RequestWithAuth) {
     try {
-      const payload: number = await this.categoryService.remove(id);
-      return requestOkResponse<number>(payload)
+      const { user } = req;
+      if (user.role == Role.ADMIN) {
+        const payload: number = await this.categoryService.remove(id);
+        return requestOkResponse<number>(payload)
+      } else {
+        const payload: number = await this.categoryService.removeByMember(id, user.gid);
+        return requestOkResponse<number>(payload)
+      }
     } catch (error) {
-      return requestFailResponse(400, 'delte category was failed')
+      return requestFailResponse(400, 'delete category was failed')
     }
   }
 

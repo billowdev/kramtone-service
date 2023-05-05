@@ -7,7 +7,7 @@ import { dbConfig } from './database.config';
 import { GroupDataEntity } from './../modules/group-data/entities/group-data.entity';
 import { UserEntity } from '../modules/user-account/entities/user-account.entity';
 import { ColorSchemeEntity } from './../modules/color-scheme/entities/color-scheme.entity';
-import { GroupColorSchemeEntity } from 'src/modules/color-scheme/entities/group-color-scheme.entity';
+import { GroupColorSchemeEntity } from '../modules/color-scheme/entities/group-color-scheme.entity';
 import { DB_IS_FORCE_DEV, DB_IS_FORCE_TEST } from './../common/constants/config.constant';
 import { booleanifyUtil } from '../common/utils/booleanify.util';
 

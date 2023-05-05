@@ -45,5 +45,7 @@ export class CreateProductDto {
 	desc: string;
 	price: number;
 	images: any;
+	publish: boolean;
+	recommend: boolean;
 }
 

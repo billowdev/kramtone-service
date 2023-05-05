@@ -13,6 +13,7 @@ import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
 import { ProductEntity } from 'src/modules/product/entities/product.entity';
 import { ColorSchemeEntity } from 'src/modules/color-scheme/entities/color-scheme.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import { GroupColorSchemeEntity } from './../../color-scheme/entities/group-color-scheme.entity';
 
 @Injectable()
 export class GroupDataService {
@@ -43,6 +44,9 @@ export class GroupDataService {
           model: ProductEntity,
           attributes: {
             exclude: ['groupId'],
+            where: {
+              publish: true,
+            }
           },
           include: [
             {
@@ -60,6 +64,9 @@ export class GroupDataService {
               where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
             },
           ],
+        },
+        {
+          model: ColorSchemeEntity,
         },
       ];
 

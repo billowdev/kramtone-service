@@ -10,12 +10,14 @@ import { UpdateColorSchemeDto } from '../dto/update-color-scheme.dto';
 import { ColorSchemeEntity } from '../entities/color-scheme.entity';
 import { ApiColorSchemeBulkCreatedBadRequestResponse, ApiColorSchemeBulkCreatedBody, ApiColorSchemeBulkCreatedOkResponse, ApiColorSchemeCreatedBadRequestResponse, ApiColorSchemeCreatedBody, ApiColorSchemeCreatedOkResponse, ApiColorSchemeDeleteBadRequestResponse, ApiColorSchemeDeleteOkResponse, ApiColorSchemeGetAllBadRequestResponse, ApiColorSchemeGetAllOkResponse, ApiColorSchemeGetOneBadRequestResponse, ApiColorSchemeGetOneOkResponse, ApiColorSchemeIdParam, ApiColorSchemeUpdateBadRequestResponse, ApiColorSchemeUpdateOkResponse } from '../color-scheme.document';
 import { ColorSchemeService } from '../services/color-scheme.service';
-import { CreateColorSchemeResponseType, DeleteColorSchemeResponseType, GetOneColorSchemeResponseType, ColorSchemeArrayResponseType, ColorSchemeArrayType, UpdateColorSchemeResponseType } from '../types/color-scheme.types';
+import { CreateColorSchemeResponseType, DeleteColorSchemeResponseType, GetOneColorSchemeResponseType, ColorSchemeArrayResponseType, ColorSchemeArrayType, UpdateColorSchemeResponseType, GroupColorSchemeArrayResponseType, GroupColorSchemeArrayType, GetOneGroupColorSchemeResponseType, DeleteGroupColorSchemeResponseType } from '../types/color-scheme.types';
+import { GroupColorSchemeEntity } from '../entities/group-color-scheme.entity';
 
-@ApiTags('Indigo tone')
-@Controller('ColorSchemes')
+@ApiTags('ColorScheme of natunal indigo tone')
+@Controller('colorschemes')
 export class ColorSchemeController {
-  constructor(private readonly colorSchemeService: ColorSchemeService) { }
+  constructor(private readonly colorSchemeService: ColorSchemeService,
+    ) { }
 
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -114,4 +116,82 @@ export class ColorSchemeController {
       return requestFailResponse(400, 'delete indigo tone was failed')
     }
   }
+
+  // =============== group color scheme ==========================
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @HttpCode(HttpStatus.FORBIDDEN)
+  @ApiBody(ApiColorSchemeCreatedBody)
+  @ApiOkResponse(ApiColorSchemeCreatedOkResponse)
+  @ApiBadRequestResponse(ApiColorSchemeCreatedBadRequestResponse)
+  @ApiForbiddenResponse(ApiCommonForbiddenResponse)
+  @Post('/group')
+  async createGroupColorScheme(@Body() createColorSchemeDto: {
+    groupId: string,
+    colorSchemeId: string
+  }): Promise<CreateColorSchemeResponseType> {
+    try {
+      const payload: GroupColorSchemeEntity = await this.colorSchemeService.createGroupColorScheme(createColorSchemeDto);
+      return requestOkResponse<any>(payload)
+    } catch (error) {
+      if(error.status === 409){
+        
+        return requestFailResponse(409, 'create group color scheme was conflic !')
+        
+      } else{
+        return requestFailResponse(400, 'create group color scheme was failed')
+
+      }
+    }
+  }
+
+
+  @Get('group/:groupId')
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @ApiOkResponse(ApiColorSchemeGetAllOkResponse)
+  @ApiBadRequestResponse(ApiColorSchemeGetAllBadRequestResponse)
+  async findAllGroupColorScheme(@Param('groupId') groupId: string): Promise<any> {
+    try {
+      const payload = await this.colorSchemeService.findAllGroupColorScheme(groupId);
+      return requestOkResponse<any>(payload);
+    } catch (error) {
+      console.log(error)
+      return requestFailResponse(400, 'get all color scheme by group was failed')
+    }
+  }
+
+  @Get('group/delete/:id')
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @ApiParam(ApiColorSchemeIdParam)
+  @ApiOkResponse(ApiColorSchemeGetOneOkResponse)
+  @ApiBadRequestResponse(ApiColorSchemeGetOneBadRequestResponse)
+  async findOneGroupColorScheme(@Param('groupId') groupId: string, @Param('colorSchemeId') colorSchemeId: string): Promise<GetOneGroupColorSchemeResponseType> {
+    try {
+      const payload: GroupColorSchemeEntity = await this.colorSchemeService.findOneGroupColorScheme(groupId, colorSchemeId);
+      if (!payload) return requestFailResponse(400, 'get one group color scheme was failed')
+      return requestOkResponse<GroupColorSchemeEntity>(payload);
+    } catch (error) {
+      return requestErrorResponse(400, 'get one group color scheme was error')
+    }
+  }
+
+
+  @Delete('group/delete/:id')
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @ApiParam(ApiColorSchemeIdParam)
+  @ApiOkResponse(ApiColorSchemeDeleteOkResponse)
+  @ApiBadRequestResponse(ApiColorSchemeDeleteBadRequestResponse)
+  async removeGroupColorScheme(@Param('id') id: string): Promise<any> {
+    try {
+      const payload = await this.colorSchemeService.removeGroupColorScheme(id);
+      return requestOkResponse<any>(payload);
+    } catch (error) {
+      return requestFailResponse(400, 'delete indigo tone was failed')
+    }
+  }
+
 }

@@ -1,4 +1,5 @@
 import { Optional } from "sequelize";
+import { declare } from './../../../../dist/database/database.providers.d';
 
 export type ProductAttributes = {
 	declare id: string
@@ -7,6 +8,8 @@ export type ProductAttributes = {
 	declare price: number;
 	declare reloadCount: number;
 	declare groupId: string;
+	declare publish: boolean;
+	declare recommend: boolean;
 	declare categoryId: number;
 	declare createdAt: Date;
 	declare updatedAt: Date;

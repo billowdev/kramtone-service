@@ -109,6 +109,22 @@ export class ProductController {
     }
   }
 
+  
+
+  @ApiOkResponse(ApiProductGetAllOkRespose)
+  @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
+  @Get('/group/manage/:id')
+  async findAllProductByGroupForManage(
+    @Param('id') gid: string,
+  ): Promise<ProductArrayResponseType> {
+    try {
+      const payload: ProductArrayType = await this.productService.findAllProductByGroupForManage(gid);
+      return requestOkResponse<ProductArrayType>(payload);
+    } catch (error) {
+      return requestErrorResponse(400, "get all product was failed")
+    }
+  }
+  
   @ApiOkResponse(ApiProductGetAllOkRespose)
   @ApiBadRequestResponse(ApiProductGetImageBadRequestResponse)
   @Get('/group/:id')

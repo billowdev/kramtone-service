@@ -83,4 +83,14 @@ export class CategoryService {
       throw new BadRequestException()
     }
   }
+
+  async removeByMember(id: string, groupId: string): Promise<number> {
+    try {
+      return await this.categoryRepo.destroy<CategoryEntity>({ where: { id, groupId, isDefault: false } })
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+
 }

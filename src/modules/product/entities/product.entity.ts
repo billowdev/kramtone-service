@@ -119,6 +119,32 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	declare colorSchemeId: string
 
 	@ApiProperty({
+		description: 'is recommend',
+		nullable: false,
+		type: Boolean,
+		default: false
+	})
+	@Column({
+		type: DataType.BOOLEAN,
+		field: 'recommend',
+		defaultValue: false
+	})
+	declare recommend: boolean
+
+	@ApiProperty({
+		description: 'is publish',
+		nullable: false,
+		type: Boolean,
+		default: false
+	})
+	@Column({
+		type: DataType.BOOLEAN,
+		field: 'publish',
+		defaultValue: false
+	})
+	declare publish: boolean
+
+	@ApiProperty({
 		description: 'When product was created',
 		nullable: false,
 		example: new Date()
