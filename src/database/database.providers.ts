@@ -44,7 +44,7 @@ export const databaseProviders = [{
          ProductEntity,
          ProductImageEntity,
          GroupDataEntity,
-         GroupColorSchemeEntity
+         // GroupColorSchemeEntity
       ]);
       // { force: true } should be fasle in production
       console.log("============")

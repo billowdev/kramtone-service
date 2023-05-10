@@ -32,12 +32,14 @@ export class GroupDataService {
     }
   }
 
-  async findAll(query: {
-    categoryId?: string;
-    colorSchemeId?: string;
-  }): Promise<GroupDataArrayType> {
+  async findAll(
+  //   query: {
+  //   categoryId?: string;
+  //   colorSchemeId?: string;
+  // }
+  ): Promise<GroupDataArrayType> {
     try {
-      let where: { [key: string]: any } = { verified: true };
+      // let where: { [key: string]: any } = { verified: true };
       const attributes: { exclude: string[] } = { exclude: [] };
       const include = [
         {
@@ -54,14 +56,14 @@ export class GroupDataService {
               attributes: {
                 exclude: ['groupId'],
               },
-              where: query.categoryId ? { id: query.categoryId } : {},
+              // where: query.categoryId ? { id: query.categoryId } : {},
             },
             {
               model: ColorSchemeEntity,
               attributes: {
                 exclude: ['groupId'],
               },
-              where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
+              // where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
             },
           ],
         },
@@ -70,30 +72,30 @@ export class GroupDataService {
         },
       ];
 
-      if (!query.categoryId && !query.colorSchemeId) {
-        where = {}; // if no filter data is provided, return all groups
-      }
-
+      // if (!query.categoryId && !query.colorSchemeId) {
+      //   where = {}; // if no filter data is provided, return all groups
+      // }
+      
       const groups = await this.groupRepo.findAll<GroupDataEntity>({
-        where,
+        // where,
         attributes,
         include,
       });
-
+console.log(groups)
       // Filter out groups that have no matching products
-      const filteredGroups = groups.filter((group) => {
-        return group.products.some((product) => {
-          if (query.categoryId && product.category.id !== query.categoryId) {
-            return false;
-          }
-          if (query.colorSchemeId && product.colorScheme.id !== query.colorSchemeId) {
-            return false;
-          }
-          return true;
-        });
-      });
+      // const filteredGroups = groups.filter((group) => {
+      //   return group.products.some((product) => {
+      //     if (query.categoryId && product.category.id !== query.categoryId) {
+      //       return false;
+      //     }
+      //     if (query.colorSchemeId && product.colorScheme.id !== query.colorSchemeId) {
+      //       return false;
+      //     }
+      //     return true;
+      //   });
+      // });
 
-      return filteredGroups;
+      return groups;
     } catch (error) {
       console.error(error);
       throw new BadRequestException();

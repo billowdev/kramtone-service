@@ -54,9 +54,12 @@ export class GroupDataController {
   }
 
   @Get('/get')
-  async findAll(@Query('categoryId') categoryId?: any, @Query('colorSchemeId') colorSchemeId?: any): Promise<GetAllGroupDataResponseType> {
+  async findAll(
+    // @Query('categoryId') categoryId?: any, 
+    // @Query('colorSchemeId') colorSchemeId?: any
+    ): Promise<GetAllGroupDataResponseType> {
     try {
-      const payload: GroupDataArrayType = await this.groupDataService.findAll({ categoryId, colorSchemeId });
+      const payload: GroupDataArrayType = await this.groupDataService.findAll();
       return requestOkResponse<GroupDataArrayType>(payload);
     } catch (error) {
       return requestFailResponse(400, 'get all group was failed');

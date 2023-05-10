@@ -1,7 +1,7 @@
 import {  Module } from '@nestjs/common';
 import { ColorSchemeController } from './controllers/color-scheme.controller';
 import { ColorSchemeProviders } from './entities/color-scheme.providers';
-import { groupColorSchemeProviders } from './entities/group-color-scheme.providers';
+// import { groupColorSchemeProviders } from './entities/group-color-scheme.providers';
 import { ColorSchemeService } from './services/color-scheme.service';
 import { GroupDataModule } from '../group-data/group-data.module';
 
@@ -12,7 +12,7 @@ controllers: [ColorSchemeController],
   providers: [
     ColorSchemeService,
     ...ColorSchemeProviders,
-    ...groupColorSchemeProviders
+    // ...groupColorSchemeProviders
   ]
 })
 

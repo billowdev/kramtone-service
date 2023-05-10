@@ -13,7 +13,7 @@ export class ColorSchemeService {
 
   constructor(
     @Inject(COLOR_SCHEME_REPOSITORY) private readonly ColorSchemeRepo: typeof ColorSchemeEntity,
-    @Inject(GROUP_COLOR_SCHEME_REPOSITORY) private readonly groupColorSchemeRepo: typeof GroupColorSchemeEntity,
+    // @Inject(GROUP_COLOR_SCHEME_REPOSITORY) private readonly groupColorSchemeRepo: typeof GroupColorSchemeEntity,
 
     private readonly groupDataService: GroupDataService
   ) { }
@@ -85,69 +85,69 @@ export class ColorSchemeService {
 
   // ============ group color scheme
 
-  async createGroupColorScheme(createGroupColorSchemeDto: { groupId: string, colorSchemeId: string }): Promise<GroupColorSchemeEntity> {
-    const colorScheme = await this.ColorSchemeRepo.findByPk(createGroupColorSchemeDto.colorSchemeId);
-    const group = await this.groupDataService.findOne(createGroupColorSchemeDto.groupId);
+  // async createGroupColorScheme(createGroupColorSchemeDto: { groupId: string, colorSchemeId: string }): Promise<GroupColorSchemeEntity> {
+  //   const colorScheme = await this.ColorSchemeRepo.findByPk(createGroupColorSchemeDto.colorSchemeId);
+  //   const group = await this.groupDataService.findOne(createGroupColorSchemeDto.groupId);
 
-    if (!colorScheme || !group) {
-      throw new Error('User or group not found.');
-    }
-    const isExist = await this.groupColorSchemeRepo.findOne({
-      where:{
-        groupId: group.id,
-        colorSchemeId: colorScheme.id
-      }
-    })
-    if(isExist) {
-      throw new ConflictException('the color scheme already exist !')
-    }
-    const groupColorScheme = new GroupColorSchemeEntity();
-    groupColorScheme.colorSchemeId = colorScheme.id;
-    groupColorScheme.groupId = group.id;
+  //   if (!colorScheme || !group) {
+  //     throw new Error('User or group not found.');
+  //   }
+  //   const isExist = await this.groupColorSchemeRepo.findOne({
+  //     where:{
+  //       groupId: group.id,
+  //       colorSchemeId: colorScheme.id
+  //     }
+  //   })
+  //   if(isExist) {
+  //     throw new ConflictException('the color scheme already exist !')
+  //   }
+  //   const groupColorScheme = new GroupColorSchemeEntity();
+  //   groupColorScheme.colorSchemeId = colorScheme.id;
+  //   groupColorScheme.groupId = group.id;
 
-    return await groupColorScheme.save();
-  }
+  //   return await groupColorScheme.save();
+  // }
 
-  async findAllGroupColorScheme(groupId: string): Promise<any> {
-    try {
+  // async findAllGroupColorScheme(groupId: string): Promise<any> {
+  //   try {
 
-      const response = await this.groupColorSchemeRepo.findAll({
-        where: { groupId },
-        include: [
-          {
-            model: ColorSchemeEntity as null,
-          },
-        ]
-      })
+  //     const response = await this.groupColorSchemeRepo.findAll({
+  //       where: { groupId },
+  //       include: [
+  //         {
+  //           model: ColorSchemeEntity as null,
+  //         },
+  //       ]
+  //     })
 
-      return response
-    } catch (error) {
-      // console.log(error)
-      throw new BadRequestException()
-    }
-  }
+  //     return response
+  //   } catch (error) {
+  //     // console.log(error)
+  //     throw new BadRequestException()
+  //   }
+  // }
 
 
 
-  async findOneGroupColorScheme(colorSchemeId: string, groupId: string): Promise<GroupColorSchemeEntity> {
-    try {
-      return await this.groupColorSchemeRepo.findOne({
-        where: { colorSchemeId, groupId }
-      })
-    } catch (error) {
-      throw new BadRequestException()
-    }
-  }
+  // async findOneGroupColorScheme(colorSchemeId: string, groupId: string): Promise<GroupColorSchemeEntity> {
+  //   try {
+  //     return await this.groupColorSchemeRepo.findOne({
+  //       where: { colorSchemeId, groupId }
+  //     })
+  //   } catch (error) {
+  //     throw new BadRequestException()
+  //   }
+  // }
 
-  async removeGroupColorScheme(id: string): Promise<any> {
-    try {
-      return await this.groupColorSchemeRepo.destroy({
-        where: { id }
-      })
-    } catch (error) {
-      throw new BadRequestException()
-    }
-  }
+  // async removeGroupColorScheme(id: string): Promise<any> {
+  //   try {
+  //     return await this.groupColorSchemeRepo.destroy({
+  //       where: { id }
+  //     })
+  //   } catch (error) {
+  //     throw new BadRequestException()
+  //   }
+  // }
 
 
 }

@@ -65,7 +65,7 @@ export class ColorSchemeEntity extends Model<ColorSchemeAttributes, ColorSchemeC
 	declare hex: string
 
 
-	@BelongsToMany(() => GroupDataEntity, () => GroupColorSchemeEntity)
-	groups: GroupDataEntity[];
+	// @BelongsToMany(() => GroupDataEntity, () => GroupColorSchemeEntity)
+	// groups: GroupDataEntity[];
 
 }

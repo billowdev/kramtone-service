@@ -6,7 +6,7 @@ import { GroupTypeEnum } from "../types/group-data.types.enum";
 import { UserEntity } from "../../../modules/user-account/entities/user-account.entity";
 import { GroupDataAttributes, GroupDataCreationAttributes } from "../types/group-entity.types";
 import { ColorSchemeEntity } from './../../color-scheme/entities/color-scheme.entity';
-import { GroupColorSchemeEntity } from "../../color-scheme/entities/group-color-scheme.entity";
+// import { GroupColorSchemeEntity } from "../../color-scheme/entities/group-color-scheme.entity";
 import { CategoryEntity } from './../../category/entities/category.entity';
 import { ProductEntity } from "src/modules/product/entities/product.entity";
 
@@ -305,7 +305,7 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	@HasMany(() => ProductEntity)
 	products: ProductEntity[]
 
-	@BelongsToMany(() => ColorSchemeEntity, () => GroupColorSchemeEntity)
-	colorSchemes: ColorSchemeEntity[];
+	// @BelongsToMany(() => ColorSchemeEntity, () => GroupColorSchemeEntity)
+	// colorSchemes: ColorSchemeEntity[];
 
 }
