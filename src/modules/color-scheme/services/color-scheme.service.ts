@@ -14,6 +14,7 @@ export class ColorSchemeService {
   constructor(
     @Inject(COLOR_SCHEME_REPOSITORY) private readonly ColorSchemeRepo: typeof ColorSchemeEntity,
     @Inject(GROUP_COLOR_SCHEME_REPOSITORY) private readonly groupColorSchemeRepo: typeof GroupColorSchemeEntity,
+
     private readonly groupDataService: GroupDataService
   ) { }
 
@@ -36,7 +37,9 @@ export class ColorSchemeService {
 
   async findAll(): Promise<ColorSchemeArrayType> {
     try {
-      return await this.ColorSchemeRepo.findAll<ColorSchemeEntity>()
+      return await this.ColorSchemeRepo.findAll<ColorSchemeEntity>({
+        order: [['id', 'ASC']],
+      })
     } catch (error) {
       throw new BadRequestException()
     }
@@ -77,6 +80,7 @@ export class ColorSchemeService {
 
 
   }
+
 
 
   // ============ group color scheme
@@ -122,6 +126,8 @@ export class ColorSchemeService {
       throw new BadRequestException()
     }
   }
+
+
 
   async findOneGroupColorScheme(colorSchemeId: string, groupId: string): Promise<GroupColorSchemeEntity> {
     try {

@@ -109,6 +109,18 @@ export class ProductController {
     }
   }
 
+
+  // @Get('/group/colorschemes')
+  // async findAllColorSchemeRelateProduct(
+  //   @Param('id') gid: string,
+  // ): Promise<ProductArrayResponseType> {
+  //   try {
+  //     const payload: ProductArrayType = await this.productService.findAllColorSchemeRelateProduct();
+  //     return requestOkResponse<ProductArrayType>(payload);
+  //   } catch (error) {
+  //     return requestErrorResponse(400, "get all product was failed")
+  //   }
+  // }
   
 
   @ApiOkResponse(ApiProductGetAllOkRespose)

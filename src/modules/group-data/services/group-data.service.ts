@@ -166,6 +166,29 @@ export class GroupDataService {
     try {
       return await this.groupRepo.findOne<GroupDataEntity>({
         where: { id },
+        include: [
+          {
+            model: ProductEntity,
+            attributes: {
+              exclude: ['groupId'],
+            },
+            include: [
+              {
+                model: CategoryEntity,
+                attributes: {
+                  exclude: ['groupId'],
+                },
+              },
+              {
+                model: ColorSchemeEntity,
+                attributes: {
+                  exclude: ['groupId'],
+                },
+              
+              },
+            ],
+          },
+        ],
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'addressId']
         },
