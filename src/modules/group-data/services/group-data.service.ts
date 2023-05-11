@@ -50,26 +50,13 @@ export class GroupDataService {
               publish: true,
             }
           },
-          include: [
-            {
-              model: CategoryEntity,
-              attributes: {
-                exclude: ['groupId'],
-              },
-              // where: query.categoryId ? { id: query.categoryId } : {},
-            },
+          include : [
             {
               model: ColorSchemeEntity,
-              attributes: {
-                exclude: ['groupId'],
-              },
-              // where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
             },
-          ],
+          ]
         },
-        {
-          model: ColorSchemeEntity,
-        },
+        
       ];
 
       // if (!query.categoryId && !query.colorSchemeId) {
@@ -81,7 +68,7 @@ export class GroupDataService {
         attributes,
         include,
       });
-console.log(groups)
+
       // Filter out groups that have no matching products
       // const filteredGroups = groups.filter((group) => {
       //   return group.products.some((product) => {
@@ -115,28 +102,9 @@ console.log(groups)
           attributes: {
             exclude: ['groupId'],
           },
-          include: [
-            {
-              model: CategoryEntity,
-              attributes: {
-                exclude: ['groupId'],
-              },
-              where: query.categoryId ? { id: query.categoryId } : {},
-            },
-            {
-              model: ColorSchemeEntity,
-              attributes: {
-                exclude: ['groupId'],
-              },
-              where: query.colorSchemeId ? { id: query.colorSchemeId } : {},
-            },
-          ],
+         
         },
       ];
-
-      if (!query.categoryId && !query.colorSchemeId) {
-        where = {}; // if no filter data is provided, return all groups
-      }
 
       const groups = await this.groupRepo.findAll<GroupDataEntity>({
         where,
@@ -144,20 +112,9 @@ console.log(groups)
         include,
       });
 
-      // Filter out groups that have no matching products
-      const filteredGroups = groups.filter((group) => {
-        return group.products.some((product) => {
-          if (query.categoryId && product.category.id !== query.categoryId) {
-            return false;
-          }
-          if (query.colorSchemeId && product.colorScheme.id !== query.colorSchemeId) {
-            return false;
-          }
-          return true;
-        });
-      });
 
-      return filteredGroups;
+
+      return groups;
     } catch (error) {
       console.error(error);
       throw new BadRequestException();

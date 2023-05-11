@@ -202,31 +202,33 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<number[]> {
     try {
-      // console.log("================")
-      // console.log(id)
-      // console.log(updateUserDto)
-      // console.log("================")
-      const response = await this.userRepo.update<UserEntity>(
-        {
-          ...updateUserDto
-        },
-        {
-          where: { id }
+      let updatedFields = { ...updateUserDto };
+   
+      if (updateUserDto.password) {
+        if (updateUserDto.oldPassword) {
+          // console.log(updateUserDto)
+          const oldData = await this.userRepo.findByPk(id);
+          const compareResult = await this.comparePassword(updateUserDto.oldPassword, oldData.hashPassword);
+          // console.log(compareResult)
+          if (!compareResult) {
+            throw new BadRequestException('Invalid old password');
+          }
         }
-      )
-      // console.log(response)
-      return response
-    } catch (error) {
-      // console.error(error['name'])
-      if (error['name'] === 'SequelizeUniqueConstraintError') {
-        throw new BadRequestException('ข้อมูลผู้ใช้ซ้ำ')
-      } else {
-        throw new BadRequestException('เกิดข้อผิดพลาดขณะอัปเดตข้อมูลผู้ใช้')
+        const newPassword = await this.hashPassword(updateUserDto.password);
+        updatedFields = { ...updatedFields, hashPassword: newPassword };
       }
-
-
+  
+      const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
+      return response;
+    } catch (error) {
+      if (error['name'] === 'SequelizeUniqueConstraintError') {
+        throw new BadRequestException('Duplicate user information');
+      } else {
+        throw new BadRequestException('An error occurred while updating user information');
+      }
     }
   }
+  
 
   async remove(id: string) {
     try {
@@ -287,47 +289,47 @@ export class UserService {
     }
   }
 
-    // signup : register service
-    public async adminCreate(userSignUp: AdminCreateUserDto): Promise<any> {
-      try {
-        const groupData = await this.groupDataService.create({
-          groupName: "",
-          groupType: GroupTypeEnum.PRODUCER,
-          agency: "",
-          phone: "",
-          email: "",
-          logo: "",
-          banner: "",
-          hno: "",
-          village: "",
-          lane: "",
-          road: "",
-          subdistrict: "",
-          district: "",
-          province: "",
-          zipCode: "",
-          lat: "",
-          lng: "",
-          verified: false
+  // signup : register service
+  public async adminCreate(userSignUp: AdminCreateUserDto): Promise<any> {
+    try {
+      const groupData = await this.groupDataService.create({
+        groupName: "",
+        groupType: GroupTypeEnum.PRODUCER,
+        agency: "",
+        phone: "",
+        email: "",
+        logo: "",
+        banner: "",
+        hno: "",
+        village: "",
+        lane: "",
+        road: "",
+        subdistrict: "",
+        district: "",
+        province: "",
+        zipCode: "",
+        lat: "",
+        lng: "",
+        verified: false
       })
-        const hashPassword = await this.hashPassword(userSignUp.password);
-        const createUser = await this.create({ ...userSignUp, hashPassword, groupId: groupData['dataValues']['id'] });
+      const hashPassword = await this.hashPassword(userSignUp.password);
+      const createUser = await this.create({ ...userSignUp, hashPassword, groupId: groupData['dataValues']['id'] });
 
-        delete createUser['dataValues'].hashPassword
-        const payload = {
-          sub: createUser['dataValues'].id,
-          role: createUser['dataValues'].role,
-          activated: createUser['dataValues'].activated,
-          gid: createUser['dataValues'].groupId
-        }
-        const token = await this.generateToken(payload);
-        return { user: createUser, token };
-      } catch (error) {
-        // console.log("========= admin create failed ============")
-        // console.error(error)
-        // console.log("========= admin create failed ============")
-        throw new BadRequestException()
+      delete createUser['dataValues'].hashPassword
+      const payload = {
+        sub: createUser['dataValues'].id,
+        role: createUser['dataValues'].role,
+        activated: createUser['dataValues'].activated,
+        gid: createUser['dataValues'].groupId
       }
+      const token = await this.generateToken(payload);
+      return { user: createUser, token };
+    } catch (error) {
+      // console.log("========= admin create failed ============")
+      // console.error(error)
+      // console.log("========= admin create failed ============")
+      throw new BadRequestException()
     }
+  }
 
 }
