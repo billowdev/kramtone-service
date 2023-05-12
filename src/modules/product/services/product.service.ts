@@ -168,54 +168,12 @@ export class ProductService {
           publish:true,
         }
       });
-      console.log("------------------------")
-      console.log(products)
+
       return products;
     } catch (error) {
-      console.log(error)
+
       throw new BadRequestException()
     }
-    // try {
-    //   let whereClause = {};
-    //   const searchableFields = [
-    //     "name",
-    //     "desc",
-    //     "price",
-    //     // "groupDataId",
-    //     // "categoryId",
-    //   ];
-
-    //   if (!isAllValuesUndefined(q)) {
-    //     whereClause = {
-    //       [Op.or]: searchableFields.map((field) => ({
-    //         [field]: {
-    //           [Op.like]: `%${q[field]}%`,
-    //         },
-    //       })),
-    //     };
-    //     if (q.keyword) {
-    //       whereClause = {
-    //         ...whereClause,
-    //         [Op.or]: [
-    //           ...searchableFields.map((field) =>
-    //            sequelize.where(sequelize.fn("LOWER", sequelize.col(field)), "LIKE", `%${q.keyword}%`)),
-    //         ],
-    //       };
-    //     }
-    //   }
-
-    //   const response = await this.productRepo.findAll({
-    //     where: whereClause,
-    //     // raw: true
-    //   });
-
-
-    //   return response;
-    // } catch (error) {
-    //   console.log(error)
-    //   throw new BadRequestException('Unable to retrieve all product')
-    // }
-
 
   }
 
@@ -260,9 +218,7 @@ export class ProductService {
 
   async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<number[]> {
     try {
-      console.log("\nupdateProductDto\n")
-      console.log(updateProductDto)
-      console.log("\nupdateProductDto")
+
       const product = await this.productRepo.update<ProductEntity>({ ...updateProductDto }, { where: { id } })
       return product
     } catch (error) {
@@ -315,7 +271,6 @@ export class ProductService {
 
   async removeProductImage(id: string, productId: string): Promise<number> {
     try {
-      console.log("==============")
 
       const image = await this.productImageRepo.findOne({
         where: { id, productId },
@@ -324,9 +279,7 @@ export class ProductService {
       if (image) {
         removeExistImage(image.image, 'products')
       }
-      console.log(id, productId)
 
-      console.log("==============")
 
       return await this.productImageRepo.destroy({ where: { id, productId } })
     } catch (error) {
