@@ -1,6 +1,6 @@
 'use strict';
 import { QueryInterface } from "sequelize";
-import { GroupTypeEnum } from "src/modules/group-data/types/group-data.types.enum";
+import { GroupTypeEnum } from "../../../modules/group-data/types/group-data.types.enum";
 type GroupType = {
 	id: string,
 	group_name: string,

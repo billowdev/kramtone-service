@@ -1,7 +1,7 @@
 'use strict';
 import { QueryInterface } from "sequelize";
 import * as argon from 'argon2'
-import { Role } from '../../modules/user-account/types/role.enum';
+import { Role } from '../../../modules/user-account/types/role.enum';
 
 async function hashPassword(password: string) {
   const hash: string = await argon.hash(password, { type: argon.argon2id });
