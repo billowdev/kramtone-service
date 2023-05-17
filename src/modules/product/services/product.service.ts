@@ -29,6 +29,9 @@ export class ProductService {
 
       return response
     } catch (error) {
+      console.log("==========createProductDto==========")
+      console.log(error)
+      console.log("==========createProductDto==========")
       throw new BadRequestException()
     }
   }
@@ -166,7 +169,8 @@ export class ProductService {
         ],
         where:{
           publish:true,
-        }
+        },
+        order: [['updatedAt', 'DESC']], // Sort by updatedAt in descending order
       });
 
       return products;
@@ -226,7 +230,7 @@ export class ProductService {
   async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<number[]> {
     try {
 
-      const product = await this.productRepo.update<ProductEntity>({ ...updateProductDto }, { where: { id } })
+      const product = await this.productRepo.update<any>({ ...updateProductDto }, { where: { id } })
       return product
     } catch (error) {
       throw new BadRequestException()

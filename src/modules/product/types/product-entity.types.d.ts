@@ -20,5 +20,5 @@ export type ProductAttributes = {
 export type ProductCreationAttributes =
 	Optional<
 		ProductAttributes,
-		'id' | 'createdAt' | 'updatedAt'
+		'id' | 'createdAt' | 'updatedAt' | 'colorSchemeId' | 'categoryId'
 	>;

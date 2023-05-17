@@ -88,9 +88,9 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 	declare groupId: string;
 
 
-	@BelongsTo(()=> CategoryEntity, {onDelete: 'casCade'})
+	@BelongsTo(() => CategoryEntity, { onDelete: 'casCade' })
 	category: CategoryEntity
-	@ForeignKey(()=>CategoryEntity)
+	@ForeignKey(() => CategoryEntity)
 	@ApiProperty({
 		description: 'Foreign key as categoryId',
 		example: "51b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
@@ -99,13 +99,13 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		type: DataType.UUID,
 		field: "category_id",
 		unique: false,
-		allowNull: false
+		allowNull: true
 	})
 	declare categoryId: string
 
-	@BelongsTo(()=> ColorSchemeEntity, {onDelete: 'casCade'})
+	@BelongsTo(() => ColorSchemeEntity, { onDelete: 'casCade' })
 	colorScheme: ColorSchemeEntity
-	@ForeignKey(()=>ColorSchemeEntity)
+	@ForeignKey(() => ColorSchemeEntity)
 	@ApiProperty({
 		description: 'Foreign key as categoryId',
 		example: "51b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
@@ -114,7 +114,7 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		type: DataType.STRING,
 		field: "color_scheme_id",
 		unique: false,
-		allowNull: false
+		allowNull: true
 	})
 	declare colorSchemeId: string
 
@@ -167,7 +167,7 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		defaultValue: new Date()
 	})
 	declare updatedAt: Date;
-	
+
 	@HasMany(() => ProductImageEntity)
 	productImages: ProductImageEntity[]
 

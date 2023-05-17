@@ -69,8 +69,8 @@ export class ProductController {
   ) {
     try {
       const product: CreateProductDto = JSON.parse(body.product)
-
       const payload: ProductEntity = await this.productService.createProduct(product);
+     
       const productId = payload.id;
 
       // ... Create a new product image for each uploaded file ...
