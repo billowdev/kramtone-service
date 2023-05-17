@@ -135,12 +135,12 @@ export class ProductEntity extends Model<ProductAttributes, ProductCreationAttri
 		description: 'is publish',
 		nullable: false,
 		type: Boolean,
-		default: false
+		default: true
 	})
 	@Column({
 		type: DataType.BOOLEAN,
 		field: 'publish',
-		defaultValue: false
+		defaultValue: true
 	})
 	declare publish: boolean
 

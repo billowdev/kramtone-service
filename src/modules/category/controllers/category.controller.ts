@@ -49,21 +49,26 @@ export class CategoryController {
     @GetSession() user: SessionDto,
     @Body('name') name: string,
     @Body('desc') desc: string,
-    @UploadedFile() file?: Express.Multer.File,
+    // @UploadedFile() file?: Express.Multer.File,
     // @Body() createCategoryDto: CreateCategoryDto
   ): Promise<CreateCategoryResponseType> {
     try {
-      const createCategoryDto = file ? {
-        name, desc,
-        image: file.filename
-      } : { name, desc };
-
+      // const createCategoryDto = file ? {
+      //   name, desc,
+      //   image: file.filename
+      // } : { name, desc };
+      const createCategoryDto = {
+        name, desc
+      }
       if (user.role === Role.ADMIN) {
-        const newCategory = { ...createCategoryDto, isDefault: true }
+        // console.log("====================")
+        // console.log(createCategoryDto)
+
+        const newCategory = { ...createCategoryDto }
         const payload: CategoryEntity = await this.categoryService.create(newCategory);
         return requestOkResponse<CategoryEntity>(payload);
       } else {
-        const newCategory = { ...createCategoryDto, isDefault: false, groupId: user.gid }
+        const newCategory = { ...createCategoryDto }
         const payload: CategoryEntity = await this.categoryService.create(newCategory);
         return requestOkResponse<CategoryEntity>(payload);
       }
@@ -159,26 +164,31 @@ export class CategoryController {
   async update(@Param('id') id: string,
     @Body('name') name: string,
     @Body('desc') desc: string,
-    @UploadedFile() file: Express.Multer.File,
+    // @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      if (file) {
-        const category: CategoryEntity = await this.categoryService.findOne(id);
-        const oldImage: string = category.image;
-        const imageFromReq: string = file.filename;
-        // if category already has an image. then delete it
-        if (
-          (oldImage !== "" || oldImage !== null) &&
-          (oldImage !== imageFromReq)) {
-          removeExistImage(oldImage, 'categories')
-        }
+      // if (file) {
+      //   const category: CategoryEntity = await this.categoryService.findOne(id);
+      //   const oldImage: string = category.image;
+      //   const imageFromReq: string = file.filename;
 
-      }
+      //   if category already has an image. then delete it
+      //   if (
+      //     (oldImage !== "" || oldImage !== null) &&
+      //     (oldImage !== imageFromReq)) {
+      //     removeExistImage(oldImage, 'categories')
+      //   }
 
-      const updateCategoryDto = file ? {
-        name, desc,
-        image: file.filename
-      } : { name, desc };
+      // }
+
+      // const updateCategoryDto = file ? {
+      //   name, desc,
+      //   image: file.filename
+      // } : { name, desc };
+
+     const  updateCategoryDto = {
+      name, desc
+     }
 
       const payload: number[] = await this.categoryService.update(id, updateCategoryDto);
       return requestOkResponse<number[]>(payload)
@@ -187,7 +197,7 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN, Role.MEMBER)
+  @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
   @ApiParam(ApiCategoryParam)
   @ApiOkResponse(ApiCategoryDeleteOkResponse)
@@ -214,67 +224,71 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN, Role.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
-  @ApiOkResponse(ApiCategoryUpdateOkResponse)
-  @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
-  @ApiForbiddenResponse(ApiCommonForbiddenResponse)
-  @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
-  @ApiConsumes('multipart/form-data')
-  @HttpCode(HttpStatus.OK)
-  @HttpCode(HttpStatus.BAD_REQUEST)
-  @HttpCode(HttpStatus.FORBIDDEN)
-  @HttpCode(HttpStatus.UNAUTHORIZED)
-  @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
-      destination: './public/uploaded/images/categories',
-      filename: updateCategoryFileName,
-    }),
-    fileFilter: imageFileFilter
-  }))
-  @Post('/upload/:id')
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('id') id: string):
-    Promise<any> {
-    try {
-      const category: CategoryEntity = await this.categoryService.findOne(id);
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  // @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
+  // @ApiOkResponse(ApiCategoryUpdateOkResponse)
+  // @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
+  // @ApiForbiddenResponse(ApiCommonForbiddenResponse)
+  // @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
+  // @ApiConsumes('multipart/form-data')
+  // @HttpCode(HttpStatus.OK)
+  // @HttpCode(HttpStatus.BAD_REQUEST)
+  // @HttpCode(HttpStatus.FORBIDDEN)
+  // @HttpCode(HttpStatus.UNAUTHORIZED)
+  // @UseInterceptors(FileInterceptor('image', {
+  //   storage: diskStorage({
+  //     destination: './public/uploaded/images/categories',
+  //     filename: updateCategoryFileName,
+  //   }),
+  //   fileFilter: imageFileFilter
+  // }))
+  // @Post('/upload/:id')
+  // async uploadImage(
+  //   @UploadedFile() file: Express.Multer.File,
+  //    @Param('id') id: string):
+  //   Promise<any> {
+  //   try {
+  //     const category: CategoryEntity = await this.categoryService.findOne(id);
 
-      const oldImage: string = category.image;
-      const imageFromReq: string = file.filename;
-      // if category already has an image. then delete it
-      if (
-        (oldImage !== "" || oldImage !== null) &&
-        (oldImage !== imageFromReq)) {
-        removeExistImage(oldImage, 'categories')
-      }
-      const updateCategory: UpdateCategoryDto = { ...category, image: imageFromReq }
-      const updateStatus: number[] = await this.categoryService.update(id, updateCategory);
-      if (!updateStatus[0]) throw new BadRequestException()
-      const payload: any = {
-        image: imageFromReq
-      }
-      return requestOkResponse<any>(payload)
-    } catch (error) {
-      return requestFailResponse(400, "upload image was failed")
-    }
-  }
+  //     const oldImage: string = category.image;
+  //     const imageFromReq: string = file.filename;
+  //     // if category already has an image. then delete it
+  //     if (
+  //       (oldImage !== "" || oldImage !== null) &&
+  //       (oldImage !== imageFromReq)) {
+  //       removeExistImage(oldImage, 'categories')
+  //     }
+  //     const updateCategory: UpdateCategoryDto = { ...category
+  //       , image: imageFromReq 
+  //     }
+  //     const updateStatus: number[] = await this.categoryService.update(id, updateCategory);
+  //     if (!updateStatus[0]) throw new BadRequestException()
+  //     const payload: any = {
+  //       image: imageFromReq
+  //     }
+  //     return requestOkResponse<any>(payload)
+  //   } catch (error) {
+  //     return requestFailResponse(400, "upload image was failed")
+  //   }
+  // }
 
-  @Get('/images/:image_name')
-  @ApiOkResponse({
-    schema: {
-      type: 'string',
-      format: 'binary'
-    },
-  })
-  @ApiBadRequestResponse({
-    schema: {
-      example: {
-        "statusCode": 404,
-        "message": "ENOENT: no such file or directory"
-      }
-    }
-  })
-  requestImages(@Param('image_name') image, @Res() res) {
-    return res.sendFile(image, { root: './public/uploaded/images/categories' })
-  }
+  // @Get('/images/:image_name')
+  // @ApiOkResponse({
+  //   schema: {
+  //     type: 'string',
+  //     format: 'binary'
+  //   },
+  // })
+  // @ApiBadRequestResponse({
+  //   schema: {
+  //     example: {
+  //       "statusCode": 404,
+  //       "message": "ENOENT: no such file or directory"
+  //     }
+  //   }
+  // })
+  // requestImages(@Param('image_name') image, @Res() res) {
+  //   return res.sendFile(image, { root: './public/uploaded/images/categories' })
+  // }
 
 }

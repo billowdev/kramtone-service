@@ -49,17 +49,17 @@ export class CategoryEntity extends Model<CategoryAttributes, CategoryCreationAt
 	})
 	declare desc: string;
 
-	@ApiProperty({
-		description: 'Category Image name',
-		example: 'image_name',
-		nullable: true,
-		maxLength: 255
-	})
-	@Column({
-		type: DataType.STRING(255),
-		allowNull: true
-	})
-	declare image: string;
+	// @ApiProperty({
+	// 	description: 'Category Image name',
+	// 	example: 'image_name',
+	// 	nullable: true,
+	// 	maxLength: 255
+	// })
+	// @Column({
+	// 	type: DataType.STRING(255),
+	// 	allowNull: true
+	// })
+	// declare image: string;
 
 	// @BelongsTo(()=> GroupDataEntity, {onDelete: 'casCade'})
 	// group: GroupDataEntity
