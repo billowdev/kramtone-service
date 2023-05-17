@@ -216,6 +216,13 @@ export class ProductService {
     }
   }
 
+  async associatedProducts(colorId:string) {
+    return await this.productRepo.count({
+      where: { colorSchemeId: colorId },
+    });
+
+  }
+
   async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<number[]> {
     try {
 

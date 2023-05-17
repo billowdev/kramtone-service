@@ -61,33 +61,33 @@ export class CategoryEntity extends Model<CategoryAttributes, CategoryCreationAt
 	})
 	declare image: string;
 
-	@BelongsTo(()=> GroupDataEntity, {onDelete: 'casCade'})
-	group: GroupDataEntity
-	@ForeignKey(()=>GroupDataEntity)
-	@ApiProperty({
-		description: 'Foreign key as categoryId',
-		example: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
-	})
-	@Column({
-		type: DataType.UUID,
-		field: "group_id",
-		unique: false,
-		allowNull: true
-	})
-	declare groupId: string
+	// @BelongsTo(()=> GroupDataEntity, {onDelete: 'casCade'})
+	// group: GroupDataEntity
+	// @ForeignKey(()=>GroupDataEntity)
+	// @ApiProperty({
+	// 	description: 'Foreign key as categoryId',
+	// 	example: "21b4f7c2-b221-4a6b-a0e3-d7ec80e011a1",
+	// })
+	// @Column({
+	// 	type: DataType.UUID,
+	// 	field: "group_id",
+	// 	unique: false,
+	// 	allowNull: true
+	// })
+	// declare groupId: string
 
 
-	@ApiProperty({
-		description: 'The status that is default category',
-		default: false,
-		example: true
-	})
-	@Column({
-		type: DataType.BOOLEAN,
-		field: 'is_default',
-		defaultValue: false,
-	})
-	declare isDefault: boolean;
+	// @ApiProperty({
+	// 	description: 'The status that is default category',
+	// 	default: false,
+	// 	example: true
+	// })
+	// @Column({
+	// 	type: DataType.BOOLEAN,
+	// 	field: 'is_default',
+	// 	defaultValue: false,
+	// })
+	// declare isDefault: boolean;
 
 
 	@ApiProperty({

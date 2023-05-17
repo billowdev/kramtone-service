@@ -45,7 +45,7 @@ module.exports = {
       },
       {
         id: "31b4f7c2-b221-4a6b-a0e3-d7ec80e011a2",
-        username: "user",
+        username: "user1",
         hash_password: await hashPassword("1234"),
         email: "user1@gmail.com",
         activated: true,

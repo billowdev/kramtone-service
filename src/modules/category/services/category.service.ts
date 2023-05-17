@@ -18,46 +18,36 @@ export class CategoryService {
 
   async findAll(): Promise<CategoryEntity[]> {
     try {
-      return await this.categoryRepo.findAll<CategoryEntity>({
-        where: {
-          isDefault: true
-        }
-      })
+      return await this.categoryRepo.findAll<CategoryEntity>()
     } catch (error) {
       throw new BadRequestException()
     }
   }
 
-  async findAllByGroup(groupId: string): Promise<CategoryEntity[]> {
-    try {
-      return await this.categoryRepo.findAll<CategoryEntity>({
-        where: {
-          groupId,
-        },
-        attributes: {
-          exclude: ['groupId']
-        }
-      })
-    } catch (error) {
-      throw new BadRequestException()
-    }
-  }
+  // async findAllByGroup(groupId: string): Promise<CategoryEntity[]> {
+  //   try {
+  //     return await this.categoryRepo.findAll<CategoryEntity>({
+  //       attributes: {
+  //         exclude: ['groupId']
+  //       }
+  //     })
+  //   } catch (error) {
+  //     throw new BadRequestException()
+  //   }
+  // }
 
-  async findAllByGroupId(groupId: string): Promise<CategoryEntity[]> {
-    try {
-      return await this.categoryRepo.findAll<CategoryEntity>({
-        where: {
-          groupId,
-          isDefault: false
-        },
-        attributes: {
-          exclude: ['groupId']
-        }
-      })
-    } catch (error) {
-      throw new BadRequestException()
-    }
-  }
+  // async findAllByGroupId(groupId: string): Promise<CategoryEntity[]> {
+  //   try {
+  //     return await this.categoryRepo.findAll<CategoryEntity>({
+      
+  //       attributes: {
+  //         exclude: ['groupId']
+  //       }
+  //     })
+  //   } catch (error) {
+  //     throw new BadRequestException()
+  //   }
+  // }
 
 
   async findOne(id: string): Promise<CategoryEntity> {
@@ -86,7 +76,7 @@ export class CategoryService {
 
   async removeByMember(id: string, groupId: string): Promise<number> {
     try {
-      return await this.categoryRepo.destroy<CategoryEntity>({ where: { id, groupId, isDefault: false } })
+      return await this.categoryRepo.destroy<CategoryEntity>({ where: { id } })
     } catch (error) {
       throw new BadRequestException()
     }

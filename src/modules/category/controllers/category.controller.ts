@@ -86,41 +86,41 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN, Role.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiOkResponse(ApiCategoryCreatedOkResponse)
-  @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
-  @HttpCode(HttpStatus.OK)
-  @HttpCode(HttpStatus.BAD_REQUEST)
-  @Get('group')
-  async findAllByGroup(
-    @GetSession() user: SessionDto
-  ): Promise<CateogoryArrayResponseType> {
-    try {
-      const { gid } = user
-      // console.log(gid)
-      const payload: CateogoryArrayType = await this.categoryService.findAllByGroup(gid);
-      return requestOkResponse<CateogoryArrayType>(payload);
-    } catch (error) {
-      return requestErrorResponse(400, 'get all category was failed');
-    }
-  }
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @ApiOkResponse(ApiCategoryCreatedOkResponse)
+  // @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
+  // @HttpCode(HttpStatus.OK)
+  // @HttpCode(HttpStatus.BAD_REQUEST)
+  // @Get('group')
+  // async findAllByGroup(
+  //   @GetSession() user: SessionDto
+  // ): Promise<CateogoryArrayResponseType> {
+  //   try {
+  //     const { gid } = user
+  //     // console.log(gid)
+  //     const payload: CateogoryArrayType = await this.categoryService.findAllByGroup(gid);
+  //     return requestOkResponse<CateogoryArrayType>(payload);
+  //   } catch (error) {
+  //     return requestErrorResponse(400, 'get all category was failed');
+  //   }
+  // }
 
-  @ApiOkResponse(ApiCategoryCreatedOkResponse)
-  @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
-  @HttpCode(HttpStatus.OK)
-  @HttpCode(HttpStatus.BAD_REQUEST)
-  @Get('group/:id')
-  async findAllByGroupId(
-    @Param('id') id: string
-  ): Promise<CateogoryArrayResponseType> {
-    try {
-      const payload: CateogoryArrayType = await this.categoryService.findAllByGroupId(id);
-      return requestOkResponse<CateogoryArrayType>(payload);
-    } catch (error) {
-      return requestErrorResponse(400, 'get all category was failed');
-    }
-  }
+  // @ApiOkResponse(ApiCategoryCreatedOkResponse)
+  // @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
+  // @HttpCode(HttpStatus.OK)
+  // @HttpCode(HttpStatus.BAD_REQUEST)
+  // @Get('group/:id')
+  // async findAllByGroupId(
+  //   @Param('id') id: string
+  // ): Promise<CateogoryArrayResponseType> {
+  //   try {
+  //     const payload: CateogoryArrayType = await this.categoryService.findAllByGroupId(id);
+  //     return requestOkResponse<CateogoryArrayType>(payload);
+  //   } catch (error) {
+  //     return requestErrorResponse(400, 'get all category was failed');
+  //   }
+  // }
 
   @ApiParam(ApiCategoryParam)
   @ApiOkResponse(ApiCategoryGetOneOkResponse)

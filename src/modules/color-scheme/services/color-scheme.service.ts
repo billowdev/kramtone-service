@@ -1,21 +1,26 @@
 import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { COLOR_SCHEME_REPOSITORY, GROUP_COLOR_SCHEME_REPOSITORY } from '../../../common/constants';
+import { COLOR_SCHEME_REPOSITORY, GROUP_COLOR_SCHEME_REPOSITORY, PRODUCT_REPOSITORY } from '../../../common/constants';
 import { BulkCreateColorSchemeDto, CreateColorSchemeDto } from '../dto/create-color-scheme.dto';
 import { UpdateColorSchemeDto } from '../dto/update-color-scheme.dto';
 import { ColorSchemeEntity } from '../entities/color-scheme.entity';
 import { GroupColorSchemeEntity } from '../entities/group-color-scheme.entity';
 import { ColorSchemeArrayType, GroupColorSchemeArrayType } from '../types/color-scheme.types';
 import { GroupDataService } from './../../group-data/services/group-data.service';
+import { ProductEntity } from 'src/modules/product/entities/product.entity';
+import { ProductService } from 'src/modules/product/services/product.service';
 
 @Injectable()
 export class ColorSchemeService {
 
   constructor(
     @Inject(COLOR_SCHEME_REPOSITORY) private readonly ColorSchemeRepo: typeof ColorSchemeEntity,
+    @Inject(PRODUCT_REPOSITORY) private readonly productRepo: typeof ProductEntity,
+
     // @Inject(GROUP_COLOR_SCHEME_REPOSITORY) private readonly groupColorSchemeRepo: typeof GroupColorSchemeEntity,
 
-    private readonly groupDataService: GroupDataService
+    private readonly groupDataService: GroupDataService,
+    private readonly productService: ProductService
   ) { }
 
   async create(createColorSchemeDto: CreateColorSchemeDto): Promise<ColorSchemeEntity> {
@@ -66,20 +71,49 @@ export class ColorSchemeService {
     }
   }
 
+  // async remove(id: string): Promise<number> {
+  //   try {
+  //     const colorId = id.toUpperCase()
+  //     const data: number = await this.ColorSchemeRepo.destroy<ColorSchemeEntity>({
+  //       where: { id: colorId }
+  //     })
+  //     if (!data) throw new BadRequestException()
+  //     return data
+  //   } catch (error) {
+  //     throw new BadRequestException()
+  //   }
+  // }
+
   async remove(id: string): Promise<number> {
     try {
-      const colorId = id.toUpperCase()
-      const data: number = await this.ColorSchemeRepo.destroy<ColorSchemeEntity>({
-        where: { id: colorId }
-      })
-      if (!data) throw new BadRequestException()
-      return data
+      const colorId = id.toUpperCase();
+
+      // Check if the color scheme is associated with any product
+      const associatedProducts = await this.productRepo.count({
+        where: { colorSchemeId: colorId },
+      });
+
+      if (associatedProducts > 0) {
+        throw new BadRequestException();
+      } else {
+        const data: any = await this.ColorSchemeRepo.destroy<ColorSchemeEntity>({
+          where: { id: colorId },
+        });
+
+        // console.log("======================")
+        // console.log(data)
+        if (!data) {
+          throw new BadRequestException();
+        }
+
+        return data;
+      }
+
     } catch (error) {
-      throw new BadRequestException()
+      throw new BadRequestException();
     }
-
-
   }
+
 
 
 

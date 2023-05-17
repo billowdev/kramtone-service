@@ -13,7 +13,7 @@ module.exports = {
 		const colorSchemeData: Array<ColorSchemeType> = [
 			{ id: "SK1-60", name_en: "Light Blue", name_th: "ฟ้าอ่อน", hex: "#78BAC6", },
 			
-			{ id: "SK1-97", name_en: "Light Blue", name_th: "ฟ้าอ่อน", hex: "#6BA4B8", },
+			// { id: "SK1-97", name_en: "Light Blue", name_th: "ฟ้าอ่อน", hex: "#6BA4B8", },
 			{ id: "SK1-65", name_en: "Light Blue", name_th: "ฟ้าอ่อน", hex: "#8FB8CA", },
 			{ id: "SK1-80", name_en: "Light Blue", name_th: "ฟ้าอ่อน", hex: "#74A9BB", },
 			{ id: "SK1-116", name_en: "Light Blue", name_th: "ฟ้าอ่อน", hex: "#7BA4B8", },

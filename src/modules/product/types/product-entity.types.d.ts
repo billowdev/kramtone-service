@@ -8,6 +8,7 @@ export type ProductAttributes = {
 	declare price: number;
 	declare reloadCount: number;
 	declare groupId: string;
+	declare colorSchemeId: string;
 	declare publish: boolean;
 	declare recommend: boolean;
 	declare categoryId: number;

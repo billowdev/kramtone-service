@@ -5,8 +5,8 @@ export type CategoryAttributes = {
 	declare name: string;
 	declare desc: string;
 	declare image: string;
-	declare groupId: string;
-	declare isDefault: boolean;
+	// declare groupId: string;
+	// declare isDefault: boolean;
 	declare createdAt: Date;
 	declare updatedAt: Date;
 }

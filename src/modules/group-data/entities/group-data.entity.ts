@@ -299,8 +299,8 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	@HasMany(() => UserEntity)
 	users: UserEntity[]
 
-	@HasMany(() => CategoryEntity)
-	categories: CategoryEntity[]
+	// @HasMany(() => CategoryEntity)
+	// categories: CategoryEntity[]
 
 	@HasMany(() => ProductEntity)
 	products: ProductEntity[]
