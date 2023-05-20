@@ -39,7 +39,7 @@ export class GroupDataService {
   // }
   ): Promise<GroupDataArrayType> {
     try {
-      // let where: { [key: string]: any } = { verified: true };
+      let where: { [key: string]: any } = { verified: true };
       const attributes: { exclude: string[] } = { exclude: [] };
       const include = [
         {
@@ -64,7 +64,7 @@ export class GroupDataService {
       // }
       
       const groups = await this.groupRepo.findAll<GroupDataEntity>({
-        // where,
+        where,
         attributes,
         include,
       });
@@ -163,6 +163,42 @@ export class GroupDataService {
       removeExistImage(newImage, 'groups')
     }
   }
+
+  
+  async adminUpdate(id: string, updateGroupDto: UpdateGroupDto): Promise<number[]> {
+    try {
+      const newUpdate = removeNullProperties<UpdateGroupDto>(updateGroupDto)
+      // console.log(newUpdate)
+      const oldGroupData = await this.groupRepo.findOne({ where: { id } })
+
+      const oldLogo: string = oldGroupData.logo;
+      const oldBanner: string = oldGroupData.banner;
+      const bannerReq: string = newUpdate?.banner;
+      const logoReq: string = newUpdate?.logo;
+
+      if (logoReq) {
+        if (oldLogo !== logoReq) {
+          removeExistImage(oldLogo, 'groups')
+        }
+      }
+
+      if (bannerReq) {
+        if (oldBanner !== bannerReq) {
+          removeExistImage(oldBanner, 'groups')
+        }
+      }
+      return await this.groupRepo.update<GroupDataEntity>({
+        ...newUpdate
+      },
+        {
+          where: { id }
+        }
+      )
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
   async update(id: string, updateGroupDto: UpdateGroupDto, user: any): Promise<number[]> {
     try {
       const newUpdate = removeNullProperties<UpdateGroupDto>(updateGroupDto)

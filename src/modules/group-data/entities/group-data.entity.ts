@@ -253,7 +253,8 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	})
 	@Column({
 		type: DataType.STRING(20),
-		allowNull: true
+		allowNull: true,
+		defaultValue: "17.166984616793364"
 	})
 	declare lat: string
 
@@ -265,7 +266,8 @@ export class GroupDataEntity extends Model<GroupDataAttributes, GroupDataCreatio
 	})
 	@Column({
 		type: DataType.STRING(20),
-		allowNull: true
+		allowNull: true,
+		defaultValue: "104.14777780025517"
 	})
 	declare lng: string
 

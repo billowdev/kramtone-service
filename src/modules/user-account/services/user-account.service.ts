@@ -203,7 +203,7 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<number[]> {
     try {
       let updatedFields = { ...updateUserDto };
-   
+
       if (updateUserDto.password) {
         if (updateUserDto.oldPassword) {
           // console.log(updateUserDto)
@@ -217,9 +217,17 @@ export class UserService {
         const newPassword = await this.hashPassword(updateUserDto.password);
         updatedFields = { ...updatedFields, hashPassword: newPassword };
       }
-  
-      const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
-      return response;
+      if (updatedFields.activated) {
+        const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
+        const user = await this.userRepo.findOne({ where: { id }, raw: true })
+        await this.groupDataService.adminUpdate(user.groupId, {  verified: true });
+        return response;
+      } else {
+        const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
+        const user = await this.userRepo.findOne({ where: { id }, raw: true })
+        await this.groupDataService.adminUpdate(user.groupId, {  verified: false });
+        return response;
+      }
     } catch (error) {
       if (error['name'] === 'SequelizeUniqueConstraintError') {
         throw new BadRequestException('Duplicate user information');
@@ -228,7 +236,7 @@ export class UserService {
       }
     }
   }
-  
+
 
   async remove(id: string) {
     try {
@@ -266,9 +274,30 @@ export class UserService {
       delete userSignUp.password;
       const createUser = await this.create({ ...userSignUp, hashPassword });
       delete createUser.hashPassword
+      const groupData = await this.groupDataService.create({
+        groupName: "",
+        groupType: GroupTypeEnum.PRODUCER,
+        agency: "",
+        phone: "",
+        email: "",
+        logo: "",
+        banner: "",
+        hno: "",
+        village: "",
+        lane: "",
+        road: "",
+        subdistrict: "",
+        district: "",
+        province: "",
+        zipCode: "",
+        lat: "",
+        lng: "",
+        verified: false
+      })
+
       await this.update(createUser.id, {
         ...createUser['dataValues'],
-        groupId: null
+        groupId: groupData.id
       })
       const userData = await this.userRepo.findOne({
         where: {
