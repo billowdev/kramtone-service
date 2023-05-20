@@ -220,12 +220,12 @@ export class UserService {
       if (updatedFields.activated) {
         const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
         const user = await this.userRepo.findOne({ where: { id }, raw: true })
-        await this.groupDataService.adminUpdate(user.groupId, {  verified: true });
+        await this.groupDataService.adminUpdate(user.groupId, { verified: true });
         return response;
       } else {
         const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
         const user = await this.userRepo.findOne({ where: { id }, raw: true })
-        await this.groupDataService.adminUpdate(user.groupId, {  verified: false });
+        await this.groupDataService.adminUpdate(user.groupId, { verified: false });
         return response;
       }
     } catch (error) {
@@ -240,7 +240,13 @@ export class UserService {
 
   async remove(id: string) {
     try {
-      return await this.userRepo.update({ removed: true }, {
+      const user = await this.userRepo.findOne({
+        where: { id }
+      })
+      if (user.groupId) {
+        await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+      }
+      return await this.userRepo.update({ removed: true, activated: false }, {
         where: { id }
       })
     } catch (error) {
