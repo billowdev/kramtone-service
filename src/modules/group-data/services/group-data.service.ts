@@ -33,10 +33,10 @@ export class GroupDataService {
   }
 
   async findAll(
-  //   query: {
-  //   categoryId?: string;
-  //   colorSchemeId?: string;
-  // }
+    //   query: {
+    //   categoryId?: string;
+    //   colorSchemeId?: string;
+    // }
   ): Promise<GroupDataArrayType> {
     try {
       let where: { [key: string]: any } = { verified: true };
@@ -50,19 +50,19 @@ export class GroupDataService {
               publish: true,
             }
           },
-          include : [
+          include: [
             {
               model: ColorSchemeEntity,
             },
           ]
         },
-        
+
       ];
 
       // if (!query.categoryId && !query.colorSchemeId) {
       //   where = {}; // if no filter data is provided, return all groups
       // }
-      
+
       const groups = await this.groupRepo.findAll<GroupDataEntity>({
         where,
         attributes,
@@ -94,7 +94,7 @@ export class GroupDataService {
     colorSchemeId?: string;
   }): Promise<GroupDataArrayType> {
     try {
-      let where: { [key: string]: any } = { };
+      let where: { [key: string]: any } = {};
       const attributes: { exclude: string[] } = { exclude: [] };
       const include = [
         {
@@ -102,7 +102,7 @@ export class GroupDataService {
           attributes: {
             exclude: ['groupId'],
           },
-         
+
         },
       ];
 
@@ -143,7 +143,7 @@ export class GroupDataService {
                 attributes: {
                   exclude: ['groupId'],
                 },
-              
+
               },
             ],
           },
@@ -164,7 +164,7 @@ export class GroupDataService {
     }
   }
 
-  
+
   async adminUpdate(id: string, updateGroupDto: UpdateGroupDto): Promise<number[]> {
     try {
       const newUpdate = removeNullProperties<UpdateGroupDto>(updateGroupDto)
@@ -194,6 +194,38 @@ export class GroupDataService {
           where: { id }
         }
       )
+    } catch (error) {
+      throw new BadRequestException()
+    }
+  }
+
+  async removeBannerLogo(id: string, remove: { banner?: boolean, logo?: boolean }): Promise<number[]> {
+    try {
+      const oldGroupData = await this.groupRepo.findOne({ where: { id } })
+      if (remove.banner) {
+        removeExistImage(oldGroupData.banner, 'groups')
+        
+
+        return await this.groupRepo.update<GroupDataEntity>({
+          banner: 'banner.png'
+        },
+          {
+            where: { id }
+          }
+        )
+      }
+
+      if (remove.logo) {
+        removeExistImage(oldGroupData.logo, 'groups')
+        return await this.groupRepo.update<GroupDataEntity>({
+          logo: 'logo.png'
+        },
+          {
+            where: { id }
+          }
+        )
+      }
+
     } catch (error) {
       throw new BadRequestException()
     }

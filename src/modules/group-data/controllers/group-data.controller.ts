@@ -57,7 +57,7 @@ export class GroupDataController {
   async findAll(
     // @Query('categoryId') categoryId?: any, 
     // @Query('colorSchemeId') colorSchemeId?: any
-    ): Promise<GetAllGroupDataResponseType> {
+  ): Promise<GetAllGroupDataResponseType> {
     try {
       const payload: GroupDataArrayType = await this.groupDataService.findAll();
       return requestOkResponse<GroupDataArrayType>(payload);
@@ -65,6 +65,34 @@ export class GroupDataController {
       return requestFailResponse(400, 'get all group was failed');
     }
   }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/remove-banner/:id')
+  async removeBanner(@Param('id') id: string) {
+    try {
+      const payload = await this.groupDataService.removeBannerLogo(id, {
+        banner: true
+      });
+      return requestOkResponse<any>(payload);
+    } catch (error) {
+      return requestFailResponse(400, 'remove banner was failed');
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/remove-logo/:id')
+  async removeLogo(@Param('id') id: string) {
+    try {
+      const payload = await this.groupDataService.removeBannerLogo(id, {
+        logo: true
+      });
+      return requestOkResponse<any>(payload);
+    } catch (error) {
+      return requestFailResponse(400, 'remove logo was failed');
+    }
+  }
+
 
   @Get('/get/:id')
   async findOne(@Param('id') id: string) {
@@ -109,18 +137,18 @@ export class GroupDataController {
     @GetSession() user: SessionDto) {
     try {
       const updateData = JSON.parse(`${groupData}`);
-    
+
       let logoName, bannerName
       if (file.logoFile) {
         logoName = file.logoFile[0].filename
-      } 
-      if(file.bannerFile){
+      }
+      if (file.bannerFile) {
         bannerName = file.bannerFile[0].filename
       }
- 
+
       const updateGroupData = {
         ...updateData,
-        logo: logoName?? null,
+        logo: logoName ?? null,
         banner: bannerName ?? null
       }
 
