@@ -56,7 +56,6 @@ export class GroupDataService {
             },
           ]
         },
-
       ];
 
       // if (!query.categoryId && !query.colorSchemeId) {
@@ -111,9 +110,6 @@ export class GroupDataService {
         attributes,
         include,
       });
-
-
-
       return groups;
     } catch (error) {
       console.error(error);
@@ -204,7 +200,7 @@ export class GroupDataService {
       const oldGroupData = await this.groupRepo.findOne({ where: { id } })
       if (remove.banner) {
         removeExistImage(oldGroupData.banner, 'groups')
-        
+
 
         return await this.groupRepo.update<GroupDataEntity>({
           banner: 'banner.png'

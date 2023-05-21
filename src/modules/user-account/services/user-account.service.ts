@@ -16,6 +16,7 @@ import { Op } from 'sequelize';
 import { GroupTypeEnum } from '../../group-data/types/group-data.types.enum';
 import { AdminCreateUserDto } from '../dto/admin-create-user';
 import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
+import { Role } from '../types/role.enum';
 
 
 @Injectable()
@@ -220,7 +221,11 @@ export class UserService {
       if (updatedFields.activated) {
         const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
         const user = await this.userRepo.findOne({ where: { id }, raw: true })
-        await this.groupDataService.adminUpdate(user.groupId, { verified: true });
+        if (user.role === Role.ADMIN) {
+          await this.groupDataService.adminUpdate(user.groupId, { verified: true });
+        } else {
+          await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+        }
         return response;
       } else {
         const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
@@ -286,8 +291,8 @@ export class UserService {
         agency: "",
         phone: "",
         email: "",
-        logo: "",
-        banner: "",
+        logo: "logo.png",
+        banner: "banner.png",
         hno: "",
         village: "",
         lane: "",
@@ -333,8 +338,8 @@ export class UserService {
         agency: "",
         phone: "",
         email: "",
-        logo: "",
-        banner: "",
+        logo: "logo.png",
+        banner: "banner.png",
         hno: "",
         village: "",
         lane: "",
@@ -347,6 +352,7 @@ export class UserService {
         lng: "",
         verified: false
       })
+
       const hashPassword = await this.hashPassword(userSignUp.password);
       const createUser = await this.create({ ...userSignUp, hashPassword, groupId: groupData['dataValues']['id'] });
 
