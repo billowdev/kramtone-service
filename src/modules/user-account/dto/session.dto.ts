@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SessionDto {
 	@ApiProperty()
@@ -11,6 +11,11 @@ export class SessionDto {
 	@IsString()
 	@IsNotEmpty()
 	gid: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	groupName?: string;
 
 	@ApiProperty()
 	@IsString()

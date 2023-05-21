@@ -82,8 +82,8 @@ export class UserService {
 
   public async refreshToken(auth: TokenDto): Promise<TokenDto> {
     try {
-      const { sub, role, activated, gid } = auth
-      const refreshToken: string = await this.generateToken({ sub, role, activated, gid });
+      const { sub, role, activated, gid, groupName} = auth
+      const refreshToken: string = await this.generateToken({ sub, role, activated, gid, groupName });
       const payload: TokenDto = {
         sub, role, refreshToken, activated, gid
       }
@@ -269,9 +269,10 @@ export class UserService {
     try {
       // find user id and role from auth
       const user: UserEntity = await this.findOneByUsername(body.username)
+      const groupData : GroupDataEntity = await this.groupDataService.findOne(user.groupId)
       const { id, role, activated, groupId } = user
       delete user.hashPassword
-      const payload = { sub: id, role, activated, gid: groupId }
+      const payload = { sub: id, role, activated, gid: groupId, groupName: groupData.groupName }
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
       const encrypt: string = encryptAES(SignData);

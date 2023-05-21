@@ -39,4 +39,8 @@ export class TokenDto {
 	@IsNotEmpty()
 	gid: string;
 
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	groupName?: string;
 }
