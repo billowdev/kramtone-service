@@ -221,16 +221,20 @@ export class UserService {
       if (updatedFields.activated) {
         const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
         const user = await this.userRepo.findOne({ where: { id }, raw: true })
-        if (user.role === Role.ADMIN) {
-          await this.groupDataService.adminUpdate(user.groupId, { verified: false });
-        } else {
-          await this.groupDataService.adminUpdate(user.groupId, { verified: true });
+        if (user.groupId) {
+          if (user.role === Role.ADMIN) {
+            await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+          } else {
+            await this.groupDataService.adminUpdate(user.groupId, { verified: true });
+          }
         }
         return response;
       } else {
         const response = await this.userRepo.update<UserEntity>(updatedFields, { where: { id } });
         const user = await this.userRepo.findOne({ where: { id }, raw: true })
-        await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+        if (user.groupId) {
+          await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+        } 
         return response;
       }
     } catch (error) {
@@ -299,7 +303,7 @@ export class UserService {
         road: "",
         subdistrict: "",
         district: "",
-        province: "",
+        province: "สกลนคร",
         zipCode: "",
         lat: "",
         lng: "",
@@ -346,7 +350,7 @@ export class UserService {
         road: "",
         subdistrict: "",
         district: "",
-        province: "",
+        province: "สกลนคร",
         zipCode: "",
         lat: "",
         lng: "",
