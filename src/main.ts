@@ -19,7 +19,8 @@ async function bootstrap() {
   const corsWhitelist = [
     CLIENT_URL_DEV,
     CLIENT_URL_DEV_2,
-    CLIENT_URL_PROD
+    CLIENT_URL_PROD,
+    '*'
   ]
   app.enableCors({
     credentials: true,
