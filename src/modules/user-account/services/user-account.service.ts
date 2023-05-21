@@ -85,7 +85,7 @@ export class UserService {
       const { sub, role, activated, gid, groupName} = auth
       const refreshToken: string = await this.generateToken({ sub, role, activated, gid, groupName });
       const payload: TokenDto = {
-        sub, role, refreshToken, activated, gid
+        sub, role, refreshToken, activated, gid, groupName
       }
       return payload
     } catch (error) {
@@ -320,12 +320,14 @@ export class UserService {
           id: createUser.id,
         },
       })
+      
       delete userData['dataValues'].hashPassword
       const payload = {
         sub: createUser['dataValues'].id,
         role: createUser['dataValues'].role,
         activated: createUser['dataValues'].activated,
-        gid: createUser['dataValues'].groupId
+        gid: createUser['dataValues'].groupId,
+        groupName: groupData.groupName
       }
       const token = await this.generateToken(payload);
       return { user: userData, token };
@@ -366,7 +368,8 @@ export class UserService {
         sub: createUser['dataValues'].id,
         role: createUser['dataValues'].role,
         activated: createUser['dataValues'].activated,
-        gid: createUser['dataValues'].groupId
+        gid: createUser['dataValues'].groupId,
+        groupName: groupData.groupName
       }
       const token = await this.generateToken(payload);
       return { user: createUser, token };

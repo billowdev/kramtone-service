@@ -15,7 +15,7 @@ export class SessionDto {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
-	groupName?: string;
+	groupName: string;
 
 	@ApiProperty()
 	@IsString()
