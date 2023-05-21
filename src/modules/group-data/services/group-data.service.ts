@@ -153,12 +153,13 @@ export class GroupDataService {
     }
   }
   async removeGroupImage(oldImage: string, newImage: string) {
-    if (
-      (oldImage !== "" || oldImage !== null) &&
-      (oldImage !== newImage)) {
-      removeExistImage(newImage, 'groups')
+    if (oldImage !== "" || oldImage !== null && oldImage !== newImage) {
+      if (oldImage !== "logo.png" && oldImage !== "banner.png") {
+        removeExistImage(newImage, 'groups');
+      }
     }
   }
+
 
 
   async adminUpdate(id: string, updateGroupDto: UpdateGroupDto): Promise<number[]> {
