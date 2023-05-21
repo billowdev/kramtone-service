@@ -7,7 +7,8 @@ import { CLIENT_URL_DEV, CLIENT_URL_DEV_2, CLIENT_URL_PROD, SERVEPORT } from './
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import { HttpExceptionFilter } from './common/exceptions/HttpExceptionFilter.exception';
-
+import * as express from 'express';
+import { json, urlencoded } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -16,27 +17,29 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(prefix, app, document);
 
-  const corsWhitelist = [
-    CLIENT_URL_DEV,
-    CLIENT_URL_DEV_2,
-    CLIENT_URL_PROD,
-    '*'
-  ]
-  app.enableCors({
-    credentials: true,
-    origin: function (origin, callback) {
-      if (!origin || corsWhitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    }
-  })
+  // const corsWhitelist = [
+  //   CLIENT_URL_DEV,
+  //   CLIENT_URL_DEV_2,
+  //   CLIENT_URL_PROD,
+  //   '*'
+  // ]
   // app.enableCors({
   //   credentials: true,
-  //   origin: '*'
-  // });
-  
+  //   origin: function (origin, callback) {
+  //     if (!origin || corsWhitelist.indexOf(origin) !== -1) {
+  //       callback(null, true)
+  //     } else {
+  //       callback(new Error('Not allowed by CORS'))
+  //     }
+  //   }
+  // })
+  app.enableCors({
+    credentials: true,
+    origin: '*'
+  });
+    // Set the maximum payload size
+    app.use(json({ limit: '40mb' }));
+    app.use(urlencoded({ extended: true, limit: '40mb' }));
 
   // Use helmet to secure the app with various HTTP headers
   // app.use(helmet());
