@@ -3,7 +3,7 @@ import { AppModule } from './modules/app.module';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from "./common/config"
 import { ValidationPipe } from '@nestjs/common';
-import { CLIENT_URL_DEV, CLIENT_URL_PROD, SERVEPORT } from './common/constants';
+import { CLIENT_URL_DEV, CLIENT_URL_DEV_2, CLIENT_URL_PROD, SERVEPORT } from './common/constants';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import { HttpExceptionFilter } from './common/exceptions/HttpExceptionFilter.exception';
@@ -16,24 +16,25 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(prefix, app, document);
 
-  // const corsWhitelist = [
-  //   CLIENT_URL_DEV,
-  //   CLIENT_URL_PROD
-  // ]
-  // app.enableCors({
-  //   credentials: true,
-  //   origin: function (origin, callback) {
-  //     if (!origin || corsWhitelist.indexOf(origin) !== -1) {
-  //       callback(null, true)
-  //     } else {
-  //       callback(new Error('Not allowed by CORS'))
-  //     }
-  //   }
-  // })
+  const corsWhitelist = [
+    CLIENT_URL_DEV,
+    CLIENT_URL_DEV_2,
+    CLIENT_URL_PROD
+  ]
   app.enableCors({
     credentials: true,
-    origin: '*'
-  });
+    origin: function (origin, callback) {
+      if (!origin || corsWhitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    }
+  })
+  // app.enableCors({
+  //   credentials: true,
+  //   origin: '*'
+  // });
   
 
   // Use helmet to secure the app with various HTTP headers
