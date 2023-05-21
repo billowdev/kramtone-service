@@ -42,5 +42,10 @@ export class TokenDto {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
+	groupType: string;
+	
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
 	groupName: string;
 }

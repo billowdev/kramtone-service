@@ -82,10 +82,10 @@ export class UserService {
 
   public async refreshToken(auth: TokenDto): Promise<TokenDto> {
     try {
-      const { sub, role, activated, gid, groupName} = auth
-      const refreshToken: string = await this.generateToken({ sub, role, activated, gid, groupName });
+      const { sub, role, activated, gid, groupName, groupType } = auth
+      const refreshToken: string = await this.generateToken({ sub, role, activated, gid, groupName, groupType });
       const payload: TokenDto = {
-        sub, role, refreshToken, activated, gid, groupName
+        sub, role, refreshToken, activated, gid, groupName, groupType
       }
       return payload
     } catch (error) {
@@ -234,7 +234,7 @@ export class UserService {
         const user = await this.userRepo.findOne({ where: { id }, raw: true })
         if (user.groupId) {
           await this.groupDataService.adminUpdate(user.groupId, { verified: false });
-        } 
+        }
         return response;
       }
     } catch (error) {
@@ -269,16 +269,17 @@ export class UserService {
     try {
       // find user id and role from auth
       const user: UserEntity = await this.findOneByUsername(body.username)
-      const groupData : GroupDataEntity = await this.groupDataService.findOne(user.groupId)
+      const groupData: GroupDataEntity = await this.groupDataService.findOne(user.groupId)
       const { id, role, activated, groupId } = user
       delete user.hashPassword
-      const payload = { sub: id, role, activated, gid: groupId, groupName: groupData.groupName }
+      const payload = { sub: id, role, activated, gid: groupId, groupName: groupData?.groupName ?? "", groupType: groupData?.groupType ?? "" }
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
       const encrypt: string = encryptAES(SignData);
       return SignData
 
     } catch (error) {
+     
       throw new BadRequestException()
     }
   }
@@ -320,14 +321,15 @@ export class UserService {
           id: createUser.id,
         },
       })
-      
+
       delete userData['dataValues'].hashPassword
       const payload = {
         sub: createUser['dataValues'].id,
         role: createUser['dataValues'].role,
         activated: createUser['dataValues'].activated,
         gid: createUser['dataValues'].groupId,
-        groupName: groupData.groupName
+        groupName: groupData.groupName,
+        groupType: groupData.groupType
       }
       const token = await this.generateToken(payload);
       return { user: userData, token };
@@ -369,7 +371,9 @@ export class UserService {
         role: createUser['dataValues'].role,
         activated: createUser['dataValues'].activated,
         gid: createUser['dataValues'].groupId,
-        groupName: groupData.groupName
+        groupName: groupData.groupName,
+        groupType: groupData.groupType
+
       }
       const token = await this.generateToken(payload);
       return { user: createUser, token };
