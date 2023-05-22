@@ -38,41 +38,43 @@ export class CategoryController {
   @ApiBadRequestResponse(ApiCategoryCreatedBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
-  @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
-      destination: './public/uploaded/images/categories',
-      filename: updateCategoryFileName,
-    }),
-    fileFilter: imageFileFilter
-  }))
+  // @UseInterceptors(FileInterceptor('image', {
+  //   storage: diskStorage({
+  //     destination: './public/uploaded/images/categories',
+  //     filename: updateCategoryFileName,
+  //   }),
+  //   fileFilter: imageFileFilter
+  // }))
   @Post()
   async create(
     @GetSession() user: SessionDto,
-    @Body('name') name: string,
-    @Body('desc') desc: string,
+    // @Body('name') name: string,
+    // @Body('desc') desc: string,
+    @Body() createCategoryDto: CreateCategoryDto
     // @UploadedFile() file?: Express.Multer.File,
     // @Body() createCategoryDto: CreateCategoryDto
   ): Promise<CreateCategoryResponseType> {
     try {
+      const payload: CategoryEntity = await this.categoryService.create(createCategoryDto);
+      return requestOkResponse<CategoryEntity>(payload);
       // const createCategoryDto = file ? {
       //   name, desc,
       //   image: file.filename
       // } : { name, desc };
-      const createCategoryDto = {
-        name, desc
-      }
-      if (user.role === Role.ADMIN) {
-        // console.log("====================")
-        // console.log(createCategoryDto)
-
-        const newCategory = { ...createCategoryDto }
-        const payload: CategoryEntity = await this.categoryService.create(newCategory);
-        return requestOkResponse<CategoryEntity>(payload);
-      } else {
-        const newCategory = { ...createCategoryDto }
-        const payload: CategoryEntity = await this.categoryService.create(newCategory);
-        return requestOkResponse<CategoryEntity>(payload);
-      }
+      // const createCategoryDto = {
+      //   name, desc
+      // }
+      // if (user.role === Role.ADMIN) {
+      //   // console.log("====================")
+      //   // console.log(createCategoryDto)
+      //   // const newCategory = { ...createCategoryDto }
+      //   const payload: CategoryEntity = await this.categoryService.create(createCategoryDto);
+      //   return requestOkResponse<CategoryEntity>(payload);
+      // } else {
+      //   // const newCategory = { ...createCategoryDto }
+      //   const payload: CategoryEntity = await this.categoryService.create(createCategoryDto);
+      //   return requestOkResponse<CategoryEntity>(payload);
+      // }
     } catch (error) {
       return requestErrorResponse(400, 'create category was error');
     }
