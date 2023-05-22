@@ -276,7 +276,7 @@ export class UserService {
 
 
   // signin : login service
-  public async signin(body: LoginDto): Promise<SignDto> {
+  public async signin(body: LoginDto): Promise<any> {
     try {
       // find user id and role from auth
       const user: UserEntity = await this.findOneByUsername(body.username)
@@ -287,7 +287,7 @@ export class UserService {
       const token = await this.generateToken(payload);
       const SignData: SignDto = { user, token }
       const encrypt: string = encryptAES(SignData);
-      return SignData
+      return encrypt
 
     } catch (error) {
 
