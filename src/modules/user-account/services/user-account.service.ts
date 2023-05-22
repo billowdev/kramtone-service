@@ -259,11 +259,16 @@ export class UserService {
         where: { id }
       })
       if (user.groupId) {
-        await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+        // await this.groupDataService.adminUpdate(user.groupId, { verified: false });
+        await this.groupDataService.remove(user.groupId);
       }
-      return await this.userRepo.update({ removed: true, activated: false }, {
+      // return await this.userRepo.update({ removed: true, activated: false }, {
+      //   where: { id }
+      // })
+      return await this.userRepo.destroy({
         where: { id }
       })
+
     } catch (error) {
       throw new BadRequestException()
     }
