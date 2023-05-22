@@ -27,8 +27,9 @@ import { CreateCategoryDto } from './../dto/create-category.dto';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
 
-  @Roles(Role.ADMIN, Role.MEMBER)
-  @UseGuards(JwtAuthGuard, UserIsActivateAuthGuard, RolesGuard)
+  // @Roles(Role.ADMIN, Role.MEMBER)
+  // @UseGuards(JwtAuthGuard, UserIsActivateAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.BAD_REQUEST)
   @HttpCode(HttpStatus.FORBIDDEN)
@@ -142,9 +143,10 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN, Role.MEMBER)
+  // @Roles(Role.ADMIN, Role.MEMBER)
   @ApiParam(ApiCategoryParam)
-  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
   @ApiOkResponse(ApiCategoryUpdateOkResponse)
   @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
@@ -198,8 +200,9 @@ export class CategoryController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard, UserIsActivateAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiParam(ApiCategoryParam)
   @ApiOkResponse(ApiCategoryDeleteOkResponse)
   @ApiBadRequestResponse(ApiCategoryDeleteBadRequestResponse)
