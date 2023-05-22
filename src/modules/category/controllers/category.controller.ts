@@ -12,7 +12,6 @@ import { removeExistImage } from '../../../common/utils/remove-exist-image.util'
 import { updateCategoryFileName } from '../../../common/utils/update-file-name.util';
 import { Role } from '../../../modules/user-account/types/role.enum';
 import { ApiCategoryCreatedBadRequestResponse, ApiCategoryCreatedOkResponse, ApiCategoryDeleteBadRequestResponse, ApiCategoryDeleteOkResponse, ApiCategoryGetOneBadRequestResponse, ApiCategoryGetOneOkResponse, ApiCategoryParam, ApiCategoryUpdateBadRequestResponse, ApiCategoryUpdateOkResponse } from '../category.document';
-import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
@@ -21,6 +20,7 @@ import { UserIsActivateAuthGuard } from './../../../common/guards/user-is-activa
 import { SessionDto } from 'src/modules/user-account/dto/session.dto';
 import { GetSession } from 'src/common/decorators/auth.decorator';
 import { RequestWithAuth } from 'src/modules/user-account/dto/login.dto';
+import { CreateCategoryDto } from './../dto/create-category.dto';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -149,21 +149,22 @@ export class CategoryController {
   @ApiBadRequestResponse(ApiCategoryUpdateBadRequestResponse)
   @ApiForbiddenResponse(ApiCommonForbiddenResponse)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
-  @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
-      destination: './public/uploaded/images/categories',
-      filename: updateCategoryFileName,
-    }),
-    fileFilter: imageFileFilter
-  }))
+  // @UseInterceptors(FileInterceptor('image', {
+  //   storage: diskStorage({
+  //     destination: './public/uploaded/images/categories',
+  //     filename: updateCategoryFileName,
+  //   }),
+  //   fileFilter: imageFileFilter
+  // }))
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.BAD_REQUEST)
   @HttpCode(HttpStatus.FORBIDDEN)
   @HttpCode(HttpStatus.UNAUTHORIZED)
   @Patch(':id')
   async update(@Param('id') id: string,
-    @Body('name') name: string,
-    @Body('desc') desc: string,
+  @Body() updateCategoryDto: UpdateCategoryDto
+    // @Body('name') name: string,
+    // @Body('desc') desc: string,
     // @UploadedFile() file: Express.Multer.File,
   ) {
     try {
@@ -186,9 +187,9 @@ export class CategoryController {
       //   image: file.filename
       // } : { name, desc };
 
-     const  updateCategoryDto = {
-      name, desc
-     }
+    //  const  updateCategoryDto = {
+    //   name, desc
+    //  }
 
       const payload: number[] = await this.categoryService.update(id, updateCategoryDto);
       return requestOkResponse<number[]>(payload)
