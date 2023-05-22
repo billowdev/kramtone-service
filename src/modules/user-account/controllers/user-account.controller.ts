@@ -17,6 +17,8 @@ import { requestFailResponse } from '../../../common/utils/generate-response.uti
 import { UserEntity } from '../entities/user-account.entity';
 import { TokenDto } from '../dto/token.dto';
 import { AdminCreateUserDto } from '../dto/admin-create-user';
+import { GetSession } from '../../../common/decorators/auth.decorator';
+import { SessionDto } from '../dto/session.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -61,7 +63,7 @@ export class UserController {
 	@Post('signup')
 	async signup(@Body() dto: SignUpDto): Promise<RequestResponseType<SignDto>> {
 		try {
-		
+
 			const payload: SignDto = await this.userService.signup(dto);
 			return requestOkResponse<SignDto>(payload)
 		} catch (error) {
@@ -102,7 +104,7 @@ export class UserController {
 		@Query() queryParams: string,
 	) {
 		// queryParams['keyword'], queryParams['page'], queryParams['pageSize']
-		const response =  await this.userService.findAll(queryParams['keyword'], queryParams['page'], queryParams['pageSize']);
+		const response = await this.userService.findAll(queryParams['keyword'], queryParams['page'], queryParams['pageSize']);
 		// console.log(response)
 		return requestOkResponse(response)
 	}
@@ -134,20 +136,20 @@ export class UserController {
 	@Patch(':id')
 	async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Request() req: RequestWithAuth) {
 		try {
-			
-			if(req.user.role === Role.ADMIN) {
+
+			if (req.user.role === Role.ADMIN) {
 				// console.log("========== status ============= ")
 				// console.log(updateUserDto)
 				const payload = await this.userService.update(id, updateUserDto);
 				return requestOkResponse<number[]>(payload)
-			}else{
-				if(updateUserDto.activated){
+			} else {
+				if (updateUserDto.activated) {
 					delete updateUserDto.activated
 				}
-				if(updateUserDto.removed){
+				if (updateUserDto.removed) {
 					delete updateUserDto.removed
 				}
-				if(updateUserDto.role){
+				if (updateUserDto.role) {
 					delete updateUserDto.role
 				}
 				const payload = await this.userService.update(id, updateUserDto);
@@ -161,8 +163,9 @@ export class UserController {
 		}
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Delete('delete/:id')
-	async remove(@Param('id') id: string) {
-		return await this.userService.remove(id);
+	async remove(@Param('id') id: string, @GetSession() user: SessionDto,) {
+		return await this.userService.remove(id, user);
 	}
 }

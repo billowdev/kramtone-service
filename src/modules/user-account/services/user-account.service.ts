@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { USER_REPOSITORY } from '../../../common/constants';
 import { CreateUserDto } from '../dto/create-user-account.dto';
 import { UpdateUserDto } from '../dto/update-user-account.dto';
@@ -247,8 +247,14 @@ export class UserService {
   }
 
 
-  async remove(id: string) {
+  async remove(id: string, userLogin: any) {
     try {
+      if (id === userLogin.sub) {
+        throw new ForbiddenException()
+      }
+      // console.log("======================")
+      // console.log(userLogin)
+      // console.log("======================")
       const user = await this.userRepo.findOne({
         where: { id }
       })
@@ -279,7 +285,7 @@ export class UserService {
       return SignData
 
     } catch (error) {
-     
+
       throw new BadRequestException()
     }
   }
