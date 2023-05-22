@@ -222,7 +222,7 @@ export class ProductController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiUnauthorizedResponse(ApiCommonUnauthorizedException)
   @ApiOkResponse(ApiProductDeleteOkResponse)
   @ApiBadRequestResponse(ApiProductDeleteBadRequestResponse)
@@ -230,7 +230,6 @@ export class ProductController {
   @Delete('delete-product/:id')
   async removeProduct(@Param('id') id: string) {
     try {
-      
       const payload: number = await this.productService.removeProduct(id);
       return requestOkResponse<number>(payload);
     } catch (error) {

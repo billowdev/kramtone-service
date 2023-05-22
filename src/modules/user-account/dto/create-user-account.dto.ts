@@ -1,5 +1,5 @@
 import { Role } from "../types/role.enum";
-import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateUserDto {
 	@IsNotEmpty()
@@ -26,8 +26,13 @@ export class CreateUserDto {
 	@IsNotEmpty()
 	surname: string;
 
+	// @IsString()
+	// @IsOptional()
+	// phone?: string;
+
 	@IsString()
 	@IsOptional()
+	@Matches(/^\d+$/, { message: 'Phone must contain only numeric characters' })
 	phone?: string;
 
 	@IsEmail()
