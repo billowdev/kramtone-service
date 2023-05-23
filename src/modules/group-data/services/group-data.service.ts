@@ -241,13 +241,17 @@ export class GroupDataService {
 
       if (logoReq) {
         if (oldLogo !== logoReq) {
-          removeExistImage(oldLogo, 'groups')
+          if (oldLogo !== "logo.png") {
+            removeExistImage(oldLogo, 'groups')
+          }
         }
       }
 
       if (bannerReq) {
         if (oldBanner !== bannerReq) {
-          removeExistImage(oldBanner, 'groups')
+          if (oldBanner !== "banner.png") {
+            removeExistImage(oldBanner, 'groups')
+          }
         }
       }
 
