@@ -208,7 +208,8 @@ export class ProductService {
             model: GroupDataEntity as null,
             attributes: {
               exclude: ['createdAt', 'updatedAt', 'verified']
-            }
+            },
+
           }
         ],
         attributes: {
