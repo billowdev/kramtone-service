@@ -43,10 +43,10 @@ export class ColorSchemeController {
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.BAD_REQUEST)
   @HttpCode(HttpStatus.FORBIDDEN)
-  @ApiBody(ApiColorSchemeBulkCreatedBody)
-  @ApiOkResponse(ApiColorSchemeBulkCreatedOkResponse)
-  @ApiBadRequestResponse(ApiColorSchemeBulkCreatedBadRequestResponse)
-  @ApiForbiddenResponse(ApiCommonForbiddenResponse)
+  // @ApiBody(ApiColorSchemeBulkCreatedBody)
+  // @ApiOkResponse(ApiColorSchemeBulkCreatedOkResponse)
+  // @ApiBadRequestResponse(ApiColorSchemeBulkCreatedBadRequestResponse)
+  // @ApiForbiddenResponse(ApiCommonForbiddenResponse)
   @Post('/bulk')
   async bulkCreate(@Body() bulkCreateColorSchemeDto: BulkCreateColorSchemeDto): Promise<ColorSchemeArrayResponseType> {
     try {
