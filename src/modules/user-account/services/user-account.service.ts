@@ -300,6 +300,9 @@ export class UserService {
     try {
       const hashPassword = await this.hashPassword(userSignUp.password);
       delete userSignUp.password;
+      if (userSignUp.role) {
+        delete userSignUp.role
+      }
       const createUser = await this.create({ ...userSignUp, role: Role.MEMBER, hashPassword });
       delete createUser.hashPassword
       const groupData = await this.groupDataService.create({
