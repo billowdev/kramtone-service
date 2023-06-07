@@ -51,7 +51,7 @@ export class UserService {
   public async findOneByUsername(username: string): Promise<UserEntity> {
     try {
       return await this.userRepo.findOne({
-        where: { username },
+        where: { username, removed: false },
         raw: true
       })
     } catch (error) {
@@ -300,7 +300,7 @@ export class UserService {
     try {
       const hashPassword = await this.hashPassword(userSignUp.password);
       delete userSignUp.password;
-  
+
       const createUser = await this.create({ ...userSignUp, hashPassword });
       delete createUser.hashPassword
       const groupData = await this.groupDataService.create({

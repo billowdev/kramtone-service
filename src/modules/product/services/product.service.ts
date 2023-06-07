@@ -283,7 +283,6 @@ export class ProductService {
 
   async removeProductImage(id: string, productId: string): Promise<number> {
     try {
-
       const image = await this.productImageRepo.findOne({
         where: { id, productId },
         raw: true
