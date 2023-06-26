@@ -7,8 +7,8 @@ import { ColorSchemeEntity } from '../entities/color-scheme.entity';
 import { GroupColorSchemeEntity } from '../entities/group-color-scheme.entity';
 import { ColorSchemeArrayType, GroupColorSchemeArrayType } from '../types/color-scheme.types';
 import { GroupDataService } from './../../group-data/services/group-data.service';
-import { ProductEntity } from 'src/modules/product/entities/product.entity';
-import { ProductService } from 'src/modules/product/services/product.service';
+import { ProductEntity } from '../../../modules/product/entities/product.entity';
+import { ProductService } from '../../../modules/product/services/product.service';
 
 @Injectable()
 export class ColorSchemeService {

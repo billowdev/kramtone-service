@@ -9,10 +9,10 @@ import { UserEntity } from './../../user-account/entities/user-account.entity';
 import { Role } from '../../user-account/types/role.enum';
 import { UserService } from './../../user-account/services/user-account.service';
 import removeNullProperties from "../../../common/utils/removeNullProperties";
-import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
-import { ProductEntity } from 'src/modules/product/entities/product.entity';
-import { ColorSchemeEntity } from 'src/modules/color-scheme/entities/color-scheme.entity';
-import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import { removeExistImage } from '../../../common/utils/remove-exist-image.util';
+import { ProductEntity } from '../../../modules/product/entities/product.entity';
+import { ColorSchemeEntity } from '../../../modules/color-scheme/entities/color-scheme.entity';
+import { CategoryEntity } from '../../../modules/category/entities/category.entity';
 import { GroupColorSchemeEntity } from './../../color-scheme/entities/group-color-scheme.entity';
 
 @Injectable()

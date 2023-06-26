@@ -8,7 +8,7 @@ import { GroupDataAttributes, GroupDataCreationAttributes } from "../types/group
 import { ColorSchemeEntity } from './../../color-scheme/entities/color-scheme.entity';
 // import { GroupColorSchemeEntity } from "../../color-scheme/entities/group-color-scheme.entity";
 import { CategoryEntity } from './../../category/entities/category.entity';
-import { ProductEntity } from "src/modules/product/entities/product.entity";
+import { ProductEntity } from "../../../modules/product/entities/product.entity";
 
 @Table({
 	tableName: 'group_data',

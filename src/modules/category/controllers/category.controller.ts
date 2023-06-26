@@ -17,9 +17,9 @@ import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
 import { CateogoryArrayResponseType, CateogoryArrayType, CreateCategoryResponseType } from '../types/category.types';
 import { UserIsActivateAuthGuard } from './../../../common/guards/user-is-activate.guard';
-import { SessionDto } from 'src/modules/user-account/dto/session.dto';
-import { GetSession } from 'src/common/decorators/auth.decorator';
-import { RequestWithAuth } from 'src/modules/user-account/dto/login.dto';
+import { SessionDto } from '../../../modules/user-account/dto/session.dto';
+import { GetSession } from '../../../common/decorators/auth.decorator';
+import { RequestWithAuth } from '../../../modules/user-account/dto/login.dto';
 import { CreateCategoryDto } from './../dto/create-category.dto';
 
 @ApiTags('Category')

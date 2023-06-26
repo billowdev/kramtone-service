@@ -15,7 +15,7 @@ import { LoginDto } from './../dto/login.dto';
 import { Op } from 'sequelize';
 import { GroupTypeEnum } from '../../group-data/types/group-data.types.enum';
 import { AdminCreateUserDto } from '../dto/admin-create-user';
-import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
+import { GroupDataEntity } from '../../../modules/group-data/entities/group-data.entity';
 import { Role } from '../types/role.enum';
 
 

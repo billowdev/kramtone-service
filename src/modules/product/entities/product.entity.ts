@@ -5,7 +5,7 @@ import { CategoryEntity } from "../../../modules/category/entities/category.enti
 import { ProductAttributes, ProductCreationAttributes } from "../types/product-entity.types";
 import { ProductImageEntity } from "./product-image.entity";
 import { GroupDataEntity } from './../../group-data/entities/group-data.entity';
-import { ColorSchemeEntity } from "src/modules/color-scheme/entities/color-scheme.entity";
+import { ColorSchemeEntity } from "../../../modules/color-scheme/entities/color-scheme.entity";
 
 @Table({
 	tableName: 'product',

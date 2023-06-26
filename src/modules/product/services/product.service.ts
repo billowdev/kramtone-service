@@ -11,10 +11,10 @@ import { ProductEntity } from '../entities/product.entity';
 import { ProductImageArrayType, ProductQueryInterface } from '../types/product.types';
 import sequelize from 'sequelize';
 import { Op } from 'sequelize';
-import isAllValuesUndefined from 'src/common/utils/is-all-undefined';
-import { GroupDataEntity } from 'src/modules/group-data/entities/group-data.entity';
-import { removeExistImage } from 'src/common/utils/remove-exist-image.util';
-import { ColorSchemeEntity } from 'src/modules/color-scheme/entities/color-scheme.entity';
+import isAllValuesUndefined from '../../../common/utils/is-all-undefined';
+import { GroupDataEntity } from '../../../modules/group-data/entities/group-data.entity';
+import { removeExistImage } from '../../../common/utils/remove-exist-image.util';
+import { ColorSchemeEntity } from '../../../modules/color-scheme/entities/color-scheme.entity';
 
 @Injectable()
 export class ProductService {
